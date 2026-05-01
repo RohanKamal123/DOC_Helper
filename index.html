@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>সরকারি কাগজ সহায়তা · BD Document Helper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F7F4EF;
+    --cream-dark: #EDE9E0;
+    --ink: #1A1916;
+    --ink-muted: #6B6860;
+    --ink-faint: #A8A59E;
+    --sage: #4A7C59;
+    --sage-light: #EAF2ED;
+    --sage-mid: #C3DCC9;
+    --amber: #C4793A;
+    --amber-light: #FBF0E6;
+    --red-soft: #C44B3A;
+    --blue-govt: #1E4D8C;
+    --blue-light: #E8EFF8;
+    --border: rgba(26,25,22,0.10);
+    --border-mid: rgba(26,25,22,0.16);
+    --shadow-sm: 0 1px 3px rgba(26,25,22,0.08), 0 1px 2px rgba(26,25,22,0.04);
+    --shadow-md: 0 4px 16px rgba(26,25,22,0.10), 0 2px 6px rgba(26,25,22,0.06);
+    --shadow-lg: 0 12px 40px rgba(26,25,22,0.12), 0 4px 12px rgba(26,25,22,0.06);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+    --font-bengali: 'Noto Sans Bengali', sans-serif;
+    --font-display: 'Instrument Serif', serif;
+    --font-ui: 'DM Sans', sans-serif;
+    --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-ui);
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(247,244,239,0.90);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+  }
+  .header-inner {
+    max-width: 960px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; color: inherit;
+  }
+  .logo-icon {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: var(--ink); display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 18px; height: 18px; }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.2; }
+  .logo-bn { font-family: var(--font-bengali); font-size: 13px; font-weight: 600; color: var(--ink); }
+  .logo-en { font-size: 10px; font-weight: 400; color: var(--ink-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .lang-toggle {
+    display: flex; gap: 2px; background: var(--cream-dark); padding: 3px; border-radius: 8px;
+  }
+  .lang-btn {
+    padding: 5px 12px; border: none; border-radius: 6px; cursor: pointer;
+    font-family: var(--font-ui); font-size: 12px; font-weight: 500;
+    background: transparent; color: var(--ink-muted);
+    transition: var(--transition);
+  }
+  .lang-btn.active { background: white; color: var(--ink); box-shadow: var(--shadow-sm); }
+
+  /* ── HERO ── */
+  .hero {
+    max-width: 960px; margin: 0 auto;
+    padding: 64px 24px 48px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--sage); background: var(--sage-light);
+    padding: 4px 10px; border-radius: 20px; margin-bottom: 16px;
+  }
+  .hero-eyebrow span { width: 6px; height: 6px; border-radius: 50%; background: var(--sage); display: inline-block; }
+  .hero h1 {
+    font-family: var(--font-display); font-size: clamp(32px, 4vw, 48px);
+    font-weight: 400; line-height: 1.2; color: var(--ink); margin-bottom: 8px;
+  }
+  .hero h1 em { font-style: italic; color: var(--sage); }
+  .hero-subtitle-bn {
+    font-family: var(--font-bengali); font-size: 18px; font-weight: 400;
+    color: var(--ink-muted); line-height: 1.7; margin-bottom: 12px;
+  }
+  .hero-subtitle-en { font-size: 14px; color: var(--ink-faint); line-height: 1.6; }
+  .hero-stats {
+    display: flex; gap: 24px; margin-top: 28px;
+  }
+  .stat { display: flex; flex-direction: column; }
+  .stat-num { font-family: var(--font-display); font-size: 26px; color: var(--ink); }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .hero-visual {
+    position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .doc-mosaic {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 280px;
+  }
+  .doc-card {
+    background: white; border: 1px solid var(--border); border-radius: var(--radius-md);
+    padding: 14px; box-shadow: var(--shadow-sm);
+    transition: transform var(--transition);
+    cursor: default;
+  }
+  .doc-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .doc-card.featured {
+    grid-column: 1 / -1; display: flex; align-items: center; gap: 12px;
+    background: var(--ink); color: white;
+  }
+  .doc-card-icon {
+    width: 32px; height: 32px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .doc-card-title { font-size: 11px; font-weight: 500; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .doc-card-bn { font-family: var(--font-bengali); font-size: 14px; font-weight: 500; color: var(--ink); margin-top: 2px; }
+  .doc-card.featured .doc-card-title { color: rgba(255,255,255,0.5); }
+  .doc-card.featured .doc-card-bn { color: white; }
+
+  /* ── SERVICES GRID ── */
+  .section { max-width: 960px; margin: 0 auto; padding: 0 24px 64px; }
+  .section-header { margin-bottom: 28px; }
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-muted); margin-bottom: 6px;
+  }
+  .section-title { font-family: var(--font-display); font-size: 26px; font-weight: 400; color: var(--ink); }
+  .section-title-bn { font-family: var(--font-bengali); font-size: 16px; color: var(--ink-muted); margin-top: 4px; }
+
+  .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .service-chip {
+    background: white; border: 1px solid var(--border); border-radius: var(--radius-md);
+    padding: 16px; cursor: pointer; transition: var(--transition);
+    display: flex; flex-direction: column; gap: 8px; text-align: left;
+    position: relative; overflow: hidden;
+  }
+  .service-chip::before {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    background: var(--sage); transform: scaleX(0); transform-origin: left;
+    transition: transform var(--transition);
+  }
+  .service-chip:hover::before { transform: scaleX(1); }
+  .service-chip:hover { border-color: var(--sage-mid); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .service-chip.selected { border-color: var(--sage); background: var(--sage-light); }
+  .service-chip.selected::before { transform: scaleX(1); }
+  .service-chip-icon { font-size: 22px; }
+  .service-chip-en { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .service-chip-bn { font-family: var(--font-bengali); font-size: 12px; color: var(--ink-muted); }
+  .service-chip-dept { font-size: 10px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* ── CHAT INTERFACE ── */
+  .chat-section {
+    max-width: 960px; margin: 0 auto; padding: 0 24px 80px;
+  }
+  .chat-container {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg);
+  }
+  .chat-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    background: linear-gradient(135deg, var(--sage-light) 0%, white 60%);
+  }
+  .chat-avatar {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--ink);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .chat-avatar svg { width: 20px; height: 20px; }
+  .chat-header-text h3 { font-size: 15px; font-weight: 500; color: var(--ink); }
+  .chat-header-text p { font-family: var(--font-bengali); font-size: 12px; color: var(--ink-muted); }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--sage);
+    box-shadow: 0 0 0 2px var(--sage-light);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  .chat-messages {
+    min-height: 320px; max-height: 480px; overflow-y: auto;
+    padding: 24px; display: flex; flex-direction: column; gap: 16px;
+    scroll-behavior: smooth;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
+
+  .message { display: flex; gap: 10px; align-items: flex-start; animation: msgIn 0.3s ease; }
+  @keyframes msgIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  .message.user { flex-direction: row-reverse; }
+
+  .msg-avatar {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+    font-weight: 600; background: var(--cream-dark); color: var(--ink-muted);
+  }
+  .msg-avatar.ai { background: var(--ink); color: white; font-size: 12px; }
+  .msg-bubble {
+    max-width: 75%; padding: 12px 16px; border-radius: 16px;
+    font-size: 14px; line-height: 1.65;
+  }
+  .message.ai .msg-bubble {
+    background: var(--cream); border: 1px solid var(--border);
+    color: var(--ink); border-bottom-left-radius: 4px;
+  }
+  .message.user .msg-bubble {
+    background: var(--ink); color: white; border-bottom-right-radius: 4px;
+  }
+  .msg-bubble-bn { font-family: var(--font-bengali); font-size: 14px; line-height: 1.8; }
+
+  /* Result cards inside chat */
+  .result-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius-md); overflow: hidden; margin-top: 12px;
+  }
+  .result-section {
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+  }
+  .result-section:last-child { border-bottom: none; }
+  .result-section-title {
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--ink-faint); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+  }
+  .result-item {
+    display: flex; align-items: flex-start; gap: 8px; padding: 4px 0;
+    font-size: 13px; color: var(--ink);
+  }
+  .result-item-bn { font-family: var(--font-bengali); font-size: 13px; }
+  .result-bullet {
+    width: 5px; height: 5px; border-radius: 50%; background: var(--sage);
+    margin-top: 7px; flex-shrink: 0;
+  }
+  .fee-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--amber-light); color: var(--amber);
+    padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  }
+  .office-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--blue-light); color: var(--blue-govt);
+    padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    font-family: var(--font-bengali);
+  }
+  .step-row {
+    display: flex; align-items: flex-start; gap: 10px; padding: 6px 0;
+  }
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%; background: var(--ink);
+    color: white; font-size: 11px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .step-text { font-size: 13px; color: var(--ink); line-height: 1.5; }
+  .step-text-bn { font-family: var(--font-bengali); font-size: 13px; }
+
+  /* ── INPUT AREA ── */
+  .chat-input-area {
+    padding: 16px 20px; border-top: 1px solid var(--border);
+    background: var(--cream);
+  }
+  .input-service-tag {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;
+  }
+  .service-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: white; border: 1px solid var(--border); border-radius: 20px;
+    padding: 4px 10px; font-size: 12px; color: var(--ink-muted);
+    cursor: pointer; transition: var(--transition);
+  }
+  .service-tag.active { background: var(--ink); color: white; border-color: var(--ink); }
+  .service-tag .remove { font-size: 14px; opacity: 0.6; }
+
+  .input-row { display: flex; gap: 8px; align-items: flex-end; }
+  .chat-textarea {
+    flex: 1; min-height: 48px; max-height: 140px;
+    padding: 12px 16px; border: 1px solid var(--border-mid); border-radius: var(--radius-md);
+    font-family: var(--font-bengali), var(--font-ui); font-size: 14px; line-height: 1.6;
+    background: white; color: var(--ink); resize: none; outline: none;
+    transition: border-color var(--transition);
+  }
+  .chat-textarea:focus { border-color: var(--sage); box-shadow: 0 0 0 3px var(--sage-light); }
+  .chat-textarea::placeholder { color: var(--ink-faint); font-family: var(--font-bengali); }
+
+  .send-btn {
+    width: 48px; height: 48px; border-radius: var(--radius-md);
+    background: var(--ink); color: white; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition); flex-shrink: 0;
+  }
+  .send-btn:hover { background: #2d2c28; transform: scale(1.03); }
+  .send-btn:disabled { background: var(--ink-faint); cursor: not-allowed; transform: none; }
+  .send-btn svg { width: 18px; height: 18px; }
+
+  .input-hints {
+    margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .hint-chip {
+    background: white; border: 1px solid var(--border); border-radius: 20px;
+    padding: 5px 12px; font-size: 12px; font-family: var(--font-bengali);
+    color: var(--ink-muted); cursor: pointer; transition: var(--transition);
+    white-space: nowrap;
+  }
+  .hint-chip:hover { border-color: var(--sage); color: var(--sage); background: var(--sage-light); }
+
+  /* ── TYPING INDICATOR ── */
+  .typing-indicator { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+  .typing-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--ink-faint);
+    animation: bounce 1.2s ease-in-out infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+  /* ── API KEY BANNER ── */
+  .api-banner {
+    background: var(--amber-light); border: 1px solid rgba(196,121,58,0.3);
+    border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 16px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .api-banner-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .api-banner-text { font-size: 13px; color: var(--amber); line-height: 1.5; }
+  .api-banner-text strong { font-weight: 600; }
+  .api-key-input {
+    width: 100%; padding: 10px 14px; margin-top: 8px;
+    border: 1px solid rgba(196,121,58,0.4); border-radius: var(--radius-sm);
+    font-family: var(--font-ui); font-size: 13px; background: white; outline: none;
+    color: var(--ink);
+  }
+  .api-key-input:focus { border-color: var(--amber); }
+  .api-save-btn {
+    margin-top: 8px; padding: 8px 16px; background: var(--amber); color: white;
+    border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: var(--transition);
+  }
+  .api-save-btn:hover { background: #b36a2e; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border); padding: 24px;
+    text-align: center; color: var(--ink-faint); font-size: 12px;
+  }
+  footer .footer-bn { font-family: var(--font-bengali); font-size: 13px; color: var(--ink-muted); margin-bottom: 4px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 680px) {
+    .hero { grid-template-columns: 1fr; gap: 32px; padding-top: 40px; }
+    .hero-visual { display: none; }
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero h1 { font-size: 30px; }
+  }
+
+  /* ── LOADING SKELETON ── */
+  .skeleton { background: linear-gradient(90deg, var(--cream) 25%, var(--cream-dark) 50%, var(--cream) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  /* scrollbar for body */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">
+        <svg fill="none" viewBox="0 0 18 18" stroke="white" stroke-width="1.5">
+          <path stroke-linecap="round" d="M4 3h10v12H4zM7 7h4M7 10h4M7 13h2"/>
+          <circle cx="13.5" cy="4.5" r="3" fill="#4A7C59" stroke="none"/>
+          <path stroke="white" stroke-width="1.2" stroke-linecap="round" d="M12 4.5l1 1 1.5-1.5"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-bn">কাগজ সহায়তা</span>
+        <span class="logo-en">BD Document Helper</span>
+      </div>
+    </a>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('both')" id="btn-both">বাংলা + EN</button>
+      <button class="lang-btn" onclick="setLang('bn')" id="btn-bn">বাংলা</button>
+      <button class="lang-btn" onclick="setLang('en')" id="btn-en">English</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow"><span></span> AI-Powered · Bangladesh Govt Services</div>
+    <h1>সরকারি কাগজ,<br><em>সহজ পথে।</em></h1>
+    <p class="hero-subtitle-bn">সরকারি ফর্ম, অফিস, কাগজপত্র — সব কিছু এক জায়গায়। আপনার সমস্যা বলুন, আমরা পথ দেখাবো।</p>
+    <p class="hero-subtitle-en">Confused by govt forms? Tired of touts? Describe your situation in plain language and get exact guidance — which form, which office, what documents, what fee.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">12+</span><span class="stat-label">Services</span></div>
+      <div class="stat"><span class="stat-num">৳0</span><span class="stat-label">No Tout Needed</span></div>
+      <div class="stat"><span class="stat-num">২ভাষা</span><span class="stat-label">Bilingual</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="doc-mosaic">
+      <div class="doc-card featured">
+        <div class="doc-card-icon" style="background:rgba(255,255,255,0.15)">🪪</div>
+        <div>
+          <div class="doc-card-title">National ID</div>
+          <div class="doc-card-bn">জাতীয় পরিচয়পত্র</div>
+        </div>
+      </div>
+      <div class="doc-card">
+        <div class="doc-card-icon" style="background:#EAF2ED">📋</div>
+        <div class="doc-card-title">Birth Cert</div>
+        <div class="doc-card-bn">জন্মনিবন্ধন</div>
+      </div>
+      <div class="doc-card">
+        <div class="doc-card-icon" style="background:#FBF0E6">🛂</div>
+        <div class="doc-card-title">Passport</div>
+        <div class="doc-card-bn">পাসপোর্ট</div>
+      </div>
+      <div class="doc-card">
+        <div class="doc-card-icon" style="background:#E8EFF8">🚗</div>
+        <div class="doc-card-title">BRTA</div>
+        <div class="doc-card-bn">ড্রাইভিং লাইসেন্স</div>
+      </div>
+      <div class="doc-card">
+        <div class="doc-card-icon" style="background:#FBF0E6">📜</div>
+        <div class="doc-card-title">SSC / HSC</div>
+        <div class="doc-card-bn">সনদপত্র</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-label">Choose a Service · সেবা বেছে নিন</div>
+    <h2 class="section-title">কোন কাজে সাহায্য চান?</h2>
+    <p class="section-title-bn">একটি বা একাধিক বেছে নিন, তারপর নিচে আপনার সমস্যা লিখুন</p>
+  </div>
+  <div class="services-grid" id="servicesGrid"></div>
+</section>
+
+<!-- CHAT -->
+<section class="chat-section">
+  <div class="section-header">
+    <div class="section-label">AI Guidance · এআই সহায়তা</div>
+    <h2 class="section-title">আপনার সমস্যা বলুন</h2>
+    <p class="section-title-bn">বাংলায় বা ইংরেজিতে লিখুন — যেভাবে সহজ মনে হয়</p>
+  </div>
+
+  <div id="apiBanner" class="api-banner">
+    <div class="api-banner-icon">🔑</div>
+    <div class="api-banner-text">
+      <strong>API Key Required</strong> — To activate AI responses, enter your Claude API key below. Your key is stored only in your browser session.<br>
+      <input type="password" class="api-key-input" id="apiKeyInput" placeholder="sk-ant-api03-..." />
+      <button class="api-save-btn" onclick="saveApiKey()">Save Key & Activate</button>
+    </div>
+  </div>
+
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="chat-avatar">
+        <svg fill="none" viewBox="0 0 20 20" stroke="white" stroke-width="1.5">
+          <circle cx="10" cy="8" r="4"/><path stroke-linecap="round" d="M3 18c0-3.87 3.13-7 7-7s7 3.13 7 7"/>
+        </svg>
+      </div>
+      <div class="chat-header-text">
+        <h3>সহায়তা Assistant</h3>
+        <p>সরকারি কাগজের বিশেষজ্ঞ · Govt Document Expert</p>
+      </div>
+      <div style="margin-left:auto"><div class="status-dot"></div></div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <!-- Welcome message inserted by JS -->
+    </div>
+
+    <div class="chat-input-area">
+      <div class="input-service-tag" id="selectedServiceTags"></div>
+      <div class="input-row">
+        <textarea
+          class="chat-textarea"
+          id="userInput"
+          placeholder="আপনার সমস্যা এখানে লিখুন... (e.g. আমার NID হারিয়ে গেছে, নতুন করতে কি কি লাগবে?)"
+          rows="2"
+          onkeydown="handleKey(event)"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          <svg fill="none" viewBox="0 0 18 18" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.5 9h11M9.5 4l5.5 5-5.5 5"/>
+          </svg>
+        </button>
+      </div>
+      <div class="input-hints" id="hintChips"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-bn">এই সেবাটি সাধারণ তথ্যের জন্য। সর্বশেষ তথ্যের জন্য সংশ্লিষ্ট সরকারি অফিসে যোগাযোগ করুন।</p>
+  <p>For official information, always verify with the respective government office. · Built with Claude AI</p>
+</footer>
+
+<script>
+// ── STATE ──
+let currentLang = 'both';
+let selectedServices = [];
+let apiKey = localStorage.getItem('bd_helper_api_key') || '';
+let chatHistory = [];
+
+const SERVICES = [
+  { id:'nid', icon:'🪪', en:'National ID (NID)', bn:'জাতীয় পরিচয়পত্র', dept:'NID Services Wing / EC' },
+  { id:'birth', icon:'📋', en:'Birth Certificate', bn:'জন্মনিবন্ধন সনদ', dept:'Local Govt / City Corp' },
+  { id:'passport', icon:'🛂', en:'Passport (MRP/e-Passport)', bn:'পাসপোর্ট', dept:'Dept of Immigration' },
+  { id:'brta', icon:'🚗', en:'Driving License / BRTA', bn:'ড্রাইভিং লাইসেন্স', dept:'BRTA' },
+  { id:'ssc', icon:'📜', en:'SSC Certificate', bn:'এসএসসি সনদ', dept:'Board of Education' },
+  { id:'hsc', icon:'🎓', en:'HSC Certificate', bn:'এইচএসসি সনদ', dept:'Board of Education' },
+  { id:'land', icon:'🏡', en:'Land / Property Deed', bn:'জমির দলিল / খতিয়ান', dept:'Sub-Registrar Office' },
+  { id:'trade', icon:'🏪', en:'Trade License', bn:'ট্রেড লাইসেন্স', dept:'City Corp / Pourashova' },
+  { id:'export', icon:'🚢', en:'Export / Customs', bn:'রপ্তানি / কাস্টমস', dept:'NBR / Customs' },
+  { id:'import', icon:'📦', en:'Import / LC', bn:'আমদানি / এলসি', dept:'NBR / Bangladesh Bank' },
+  { id:'taxtin', icon:'🧾', en:'TIN / Income Tax', bn:'টিআইএন / আয়কর', dept:'NBR' },
+  { id:'police', icon:'🔏', en:'Police Clearance', bn:'পুলিশ ক্লিয়ারেন্স', dept:'Police HQ' },
+];
+
+const HINTS = [
+  'আমার NID হারিয়ে গেছে',
+  'জন্মনিবন্ধন সংশোধন করতে চাই',
+  'প্রথমবার পাসপোর্ট করবো',
+  'ড্রাইভিং লাইসেন্স নবায়ন',
+  'SSC সনদের ডুপ্লিকেট কপি',
+  'I need police clearance for abroad',
+];
+
+const SYSTEM_PROMPT = `You are a knowledgeable assistant specializing in Bangladesh government document services. You help citizens navigate bureaucratic processes clearly and accurately.
+
+ALWAYS respond in BOTH Bengali (বাংলা) and English unless the user speaks only one language.
+
+For every query, provide:
+1. **Which form/application** is needed (form number if known)
+2. **Which office** to visit (specific office name in Bengali and English)
+3. **Required documents** (exact list, numbered)
+4. **Government fee** (exact amount in BDT ৳)
+5. **Step-by-step process** (numbered steps, simple language)
+6. **Time it takes** (processing time)
+7. **Online option** if available (website URL)
+8. **Warning** about common mistakes or touts to avoid
+
+Format your response with clear sections using these markers:
+[FORM] [OFFICE] [DOCUMENTS] [FEE] [STEPS] [TIME] [ONLINE] [WARNING]
+
+Be specific to Bangladesh government processes as of 2024. Use both বাংলা and English for all section content. Keep tone warm, helpful, and empowering — like helping a family member.
+
+Services you know about:
+- NID: Election Commission, NID Services Wing, nidw.gov.bd
+- Birth Certificate: Local government offices, bdris.gov.bd  
+- Passport: Dept of Immigration & Passports, dip.gov.bd
+- BRTA: Bangladesh Road Transport Authority, brta.gov.bd
+- SSC/HSC: Education Boards, educationboardresults.gov.bd
+- Land: Sub-registrar offices, land.gov.bd
+- Trade License: City Corporation / Pourashova
+- TIN: NBR, nbr.gov.bd, incometax.gov.bd
+- Police Clearance: Bangladesh Police, police.gov.bd
+- Export/Import/Customs: NBR Customs, customs.gov.bd`;
+
+// ── INIT ──
+function init() {
+  renderServices();
+  renderHints();
+  renderWelcome();
+  if (apiKey) document.getElementById('apiBanner').style.display = 'none';
+}
+
+function renderServices() {
+  const grid = document.getElementById('servicesGrid');
+  grid.innerHTML = SERVICES.map(s => `
+    <div class="service-chip" id="chip-${s.id}" onclick="toggleService('${s.id}')">
+      <div class="service-chip-icon">${s.icon}</div>
+      <div class="service-chip-en">${s.en}</div>
+      <div class="service-chip-bn">${s.bn}</div>
+      <div class="service-chip-dept">${s.dept}</div>
+    </div>
+  `).join('');
+}
+
+function renderHints() {
+  const el = document.getElementById('hintChips');
+  el.innerHTML = HINTS.map(h => `
+    <div class="hint-chip" onclick="useHint('${h}')">${h}</div>
+  `).join('');
+}
+
+function renderWelcome() {
+  addMessage('ai', `
+    <div class="msg-bubble-bn">আস্সালামু আলাইকুম! 👋</div>
+    <div style="margin-top:6px">আমি আপনাকে সরকারি কাগজপত্রের কাজে সাহায্য করতে এসেছি। উপরে থেকে আপনার প্রয়োজনীয় সেবাটি বেছে নিন এবং নিচে আপনার সমস্যাটি লিখুন।</div>
+    <div style="margin-top:8px; font-size:13px; color:var(--ink-muted)">Select a service above, then describe your situation below — in Bangla or English.</div>
+  `);
+}
+
+// ── SERVICE SELECTION ──
+function toggleService(id) {
+  const idx = selectedServices.indexOf(id);
+  if (idx > -1) selectedServices.splice(idx, 1);
+  else selectedServices.push(id);
+  document.querySelectorAll('.service-chip').forEach(c => c.classList.remove('selected'));
+  selectedServices.forEach(sid => document.getElementById('chip-'+sid)?.classList.add('selected'));
+  renderServiceTags();
+}
+
+function renderServiceTags() {
+  const el = document.getElementById('selectedServiceTags');
+  if (!selectedServices.length) { el.innerHTML = ''; return; }
+  el.innerHTML = selectedServices.map(sid => {
+    const s = SERVICES.find(x => x.id === sid);
+    return s ? `<div class="service-tag active">${s.icon} ${s.en} <span class="remove" onclick="toggleService('${sid}')">×</span></div>` : '';
+  }).join('');
+}
+
+// ── LANG ──
+function setLang(lang) {
+  currentLang = lang;
+  ['both','bn','en'].forEach(l => {
+    document.getElementById('btn-'+l)?.classList.toggle('active', l === lang);
+  });
+}
+
+// ── HINTS ──
+function useHint(text) {
+  document.getElementById('userInput').value = text;
+  document.getElementById('userInput').focus();
+}
+
+// ── API KEY ──
+function saveApiKey() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (val.startsWith('sk-ant')) {
+    apiKey = val;
+    localStorage.setItem('bd_helper_api_key', val);
+    document.getElementById('apiBanner').style.display = 'none';
+    addMessage('ai', '<div class="msg-bubble-bn">✅ API key সংরক্ষিত হয়েছে। এখন আমি আপনার প্রশ্নের উত্তর দিতে পারবো!</div>');
+  } else {
+    alert('Please enter a valid Claude API key (starts with sk-ant...)');
+  }
+}
+
+// ── MESSAGING ──
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function addMessage(role, htmlContent) {
+  const msgs = document.getElementById('chatMessages');
+  const isAI = role === 'ai';
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+  div.innerHTML = `
+    <div class="msg-avatar ${isAI ? 'ai' : ''}">${isAI ? 'AI' : '👤'}</div>
+    <div class="msg-bubble">${htmlContent}</div>
+  `;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function addTyping() {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'message ai';
+  div.id = 'typingIndicator';
+  div.innerHTML = `
+    <div class="msg-avatar ai">AI</div>
+    <div class="msg-bubble"><div class="typing-indicator">
+      <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+    </div></div>
+  `;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+  document.getElementById('typingIndicator')?.remove();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Show user message
+  const serviceContext = selectedServices.length
+    ? `[Selected services: ${selectedServices.map(id => SERVICES.find(s=>s.id===id)?.en).join(', ')}]\n\n`
+    : '';
+  addMessage('user', `<div class="msg-bubble-bn">${escHtml(text)}</div>`);
+  input.value = '';
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+
+  if (!apiKey) {
+    addMessage('ai', `
+      <div class="msg-bubble-bn">⚠️ API key দেওয়া হয়নি।</div>
+      <div style="margin-top:6px;font-size:13px">Please add your Claude API key above to get AI-powered responses. For now, here's a demo response:</div>
+      ${buildDemoResponse(text, selectedServices)}
+    `);
+    btn.disabled = false;
+    return;
+  }
+
+  chatHistory.push({ role: 'user', content: serviceContext + text });
+  addTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 1500,
+        system: SYSTEM_PROMPT,
+        messages: chatHistory,
+      }),
+    });
+    const data = await res.json();
+    removeTyping();
+    if (data.error) throw new Error(data.error.message);
+    const reply = data.content?.[0]?.text || 'No response.';
+    chatHistory.push({ role: 'assistant', content: reply });
+    addMessage('ai', formatResponse(reply));
+  } catch (err) {
+    removeTyping();
+    addMessage('ai', `<div style="color:var(--red-soft)">⚠️ Error: ${escHtml(err.message)}</div><div style="margin-top:6px;font-size:13px">Check your API key or try again.</div>`);
+  }
+  btn.disabled = false;
+}
+
+// ── FORMAT AI RESPONSE ──
+function formatResponse(text) {
+  // Parse sections
+  const sections = {
+    FORM: extract(text, 'FORM'), OFFICE: extract(text, 'OFFICE'),
+    DOCUMENTS: extract(text, 'DOCUMENTS'), FEE: extract(text, 'FEE'),
+    STEPS: extract(text, 'STEPS'), TIME: extract(text, 'TIME'),
+    ONLINE: extract(text, 'ONLINE'), WARNING: extract(text, 'WARNING'),
+  };
+
+  const hasSections = Object.values(sections).some(v => v);
+  if (!hasSections) {
+    // Plain text fallback
+    return `<div class="msg-bubble-bn" style="white-space:pre-wrap">${escHtml(text)}</div>`;
+  }
+
+  let html = '';
+
+  if (sections.OFFICE || sections.FEE) {
+    html += `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">`;
+    if (sections.OFFICE) html += `<span class="office-badge">🏛️ ${escHtml(sections.OFFICE.split('\n')[0])}</span>`;
+    if (sections.FEE) html += `<span class="fee-badge">৳ ${escHtml(sections.FEE.split('\n')[0])}</span>`;
+    if (sections.TIME) html += `<span class="fee-badge" style="background:#EAF2ED;color:#4A7C59">⏱ ${escHtml(sections.TIME.split('\n')[0])}</span>`;
+    html += `</div>`;
+  }
+
+  html += `<div class="result-card">`;
+
+  if (sections.DOCUMENTS) {
+    html += `<div class="result-section">
+      <div class="result-section-title">📄 প্রয়োজনীয় কাগজপত্র · Required Documents</div>
+      ${sections.DOCUMENTS.split('\n').filter(l=>l.trim()).map(l =>
+        `<div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">${escHtml(l.replace(/^[\d\.\-\*\s]+/, ''))}</div></div>`
+      ).join('')}
+    </div>`;
+  }
+
+  if (sections.STEPS) {
+    const steps = sections.STEPS.split('\n').filter(l => l.trim());
+    html += `<div class="result-section">
+      <div class="result-section-title">📍 ধাপসমূহ · Steps</div>
+      ${steps.map((step, i) =>
+        `<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text step-text-bn">${escHtml(step.replace(/^[\d\.\-\*\s]+/, ''))}</div></div>`
+      ).join('')}
+    </div>`;
+  }
+
+  if (sections.FORM) {
+    html += `<div class="result-section">
+      <div class="result-section-title">📝 ফর্ম · Form</div>
+      <div class="result-item-bn" style="font-size:13px">${escHtml(sections.FORM)}</div>
+    </div>`;
+  }
+
+  if (sections.ONLINE) {
+    html += `<div class="result-section">
+      <div class="result-section-title">🌐 অনলাইন সুবিধা · Online</div>
+      <div class="result-item-bn" style="font-size:13px">${escHtml(sections.ONLINE)}</div>
+    </div>`;
+  }
+
+  if (sections.WARNING) {
+    html += `<div class="result-section" style="background:rgba(196,75,58,0.04)">
+      <div class="result-section-title" style="color:var(--red-soft)">⚠️ সতর্কতা · Warning</div>
+      <div class="result-item-bn" style="font-size:13px;color:var(--red-soft)">${escHtml(sections.WARNING)}</div>
+    </div>`;
+  }
+
+  html += `</div>`;
+
+  // Any remaining text
+  const remaining = text.replace(/\[.*?\][\s\S]*?(?=\[|$)/g, '').trim();
+  if (remaining) html += `<div style="margin-top:10px;font-size:13px;color:var(--ink-muted);line-height:1.6">${escHtml(remaining)}</div>`;
+
+  return html;
+}
+
+function extract(text, key) {
+  const re = new RegExp(`\\[${key}\\]([\\s\\S]*?)(?=\\[|$)`, 'i');
+  const m = text.match(re);
+  return m ? m[1].trim() : '';
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── DEMO RESPONSE ──
+function buildDemoResponse(query, services) {
+  const isNID = query.toLowerCase().includes('nid') || query.includes('পরিচয়পত্র') || services.includes('nid');
+  if (isNID) {
+    return `<div class="result-card" style="margin-top:10px">
+      <div class="result-section">
+        <div class="result-section-title">🏛️ অফিস · Office</div>
+        <span class="office-badge">নিকটস্থ উপজেলা নির্বাচন অফিস · Upazila EC Office</span>
+      </div>
+      <div class="result-section">
+        <div class="result-section-title">৳ ফি · Fee</div>
+        <span class="fee-badge">৳ 345 (Replacement) / ৳ 115 (Correction)</span>
+      </div>
+      <div class="result-section">
+        <div class="result-section-title">📄 প্রয়োজনীয় কাগজ</div>
+        <div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">জন্মনিবন্ধন সনদ (Birth Certificate)</div></div>
+        <div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">মূল NID কার্ড (যদি থাকে)</div></div>
+        <div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">পাসপোর্ট সাইজ ছবি ২ কপি</div></div>
+        <div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">ইউটিলিটি বিল / বাড়ির দলিল (ঠিকানা প্রমাণ)</div></div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-title">📍 ধাপ</div>
+        <div class="step-row"><div class="step-num">1</div><div class="step-text step-text-bn">services.nidw.gov.bd এ গিয়ে অনলাইনে আবেদন করুন</div></div>
+        <div class="step-row"><div class="step-num">2</div><div class="step-text step-text-bn">আবেদন ফর্ম প্রিন্ট করুন এবং স্বাক্ষর করুন</div></div>
+        <div class="step-row"><div class="step-num">3</div><div class="step-text step-text-bn">উপজেলা নির্বাচন অফিসে কাগজ জমা দিন</div></div>
+        <div class="step-row"><div class="step-num">4</div><div class="step-text step-text-bn">বায়োমেট্রিক (আঙুলের ছাপ) দিন</div></div>
+        <div class="step-row"><div class="step-num">5</div><div class="step-text step-text-bn">১৫-৩০ দিনের মধ্যে নতুন কার্ড পাবেন</div></div>
+      </div>
+      <div class="result-section" style="background:rgba(196,75,58,0.04)">
+        <div class="result-section-title" style="color:var(--red-soft)">⚠️ সতর্কতা</div>
+        <div class="result-item-bn" style="font-size:13px;color:var(--red-soft)">দালাল বা তৃতীয় পক্ষের সাহায্য নেওয়ার দরকার নেই। সরাসরি অফিসে যান। অতিরিক্ত টাকা দাবি করলে অভিযোগ করুন।</div>
+      </div>
+    </div>`;
+  }
+  return `<div style="font-size:14px;color:var(--ink-muted)">This is a demo. Add your API key above for personalized, AI-powered guidance on your specific situation.</div>`;
+}
+
+// ── START ──
+init();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>সরকারি কাগজ সহায়তা · BD Document Helper — Gemini AI</title>
+<title>সরকারি কাগজ সহায়তা · BD Document Helper</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
@@ -278,6 +278,80 @@
   .step-text { font-size: 13px; color: var(--ink); line-height: 1.5; }
   .step-text-bn { font-family: var(--font-bengali); font-size: 13px; }
 
+  /* ── API SETUP PANEL ── */
+  .api-setup-panel {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius-xl); overflow: hidden;
+    box-shadow: var(--shadow-lg); margin-bottom: 20px;
+  }
+  .api-setup-header {
+    padding: 20px 24px; background: linear-gradient(135deg, var(--amber-light) 0%, white 70%);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .api-setup-header h3 { font-size: 15px; font-weight: 500; color: var(--ink); }
+  .api-setup-header p { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+  .api-setup-body { padding: 20px 24px; }
+
+  /* Provider tabs */
+  .provider-tabs {
+    display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .provider-tab {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 14px; border: 1px solid var(--border-mid); border-radius: var(--radius-sm);
+    cursor: pointer; transition: var(--transition); background: white;
+    font-size: 13px; font-weight: 500; color: var(--ink-muted);
+  }
+  .provider-tab:hover { border-color: var(--sage-mid); color: var(--ink); }
+  .provider-tab.active { border-color: var(--sage); background: var(--sage-light); color: var(--sage); }
+  .provider-logo { font-size: 16px; }
+
+  /* API field group */
+  .field-group { margin-bottom: 14px; }
+  .field-label { font-size: 12px; font-weight: 500; color: var(--ink-muted); margin-bottom: 6px; display: block; }
+  .field-input {
+    width: 100%; padding: 10px 14px;
+    border: 1px solid var(--border-mid); border-radius: var(--radius-sm);
+    font-family: var(--font-ui); font-size: 13px; background: white; outline: none;
+    color: var(--ink); transition: border-color var(--transition);
+  }
+  .field-input:focus { border-color: var(--sage); box-shadow: 0 0 0 3px var(--sage-light); }
+  .field-select {
+    width: 100%; padding: 10px 14px;
+    border: 1px solid var(--border-mid); border-radius: var(--radius-sm);
+    font-family: var(--font-ui); font-size: 13px; background: white; outline: none;
+    color: var(--ink); cursor: pointer; transition: border-color var(--transition);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6860' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+    padding-right: 36px;
+  }
+  .field-select:focus { border-color: var(--sage); box-shadow: 0 0 0 3px var(--sage-light); }
+
+  .field-hint { font-size: 11px; color: var(--ink-faint); margin-top: 5px; }
+  .field-hint a { color: var(--amber); text-decoration: underline; }
+
+  .api-save-btn {
+    padding: 10px 20px; background: var(--ink); color: white;
+    border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: var(--transition); margin-right: 8px;
+  }
+  .api-save-btn:hover { background: #2d2c28; }
+  .api-clear-btn {
+    padding: 10px 20px; background: transparent; color: var(--ink-muted);
+    border: 1px solid var(--border-mid); border-radius: var(--radius-sm);
+    font-size: 13px; cursor: pointer; transition: var(--transition);
+  }
+  .api-clear-btn:hover { color: var(--red-soft); border-color: var(--red-soft); }
+
+  .api-status-bar {
+    display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+    background: var(--sage-light); border-radius: var(--radius-sm); margin-top: 14px;
+    font-size: 13px; color: var(--sage);
+  }
+  .api-status-bar .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
   /* ── INPUT AREA ── */
   .chat-input-area {
     padding: 16px 20px; border-top: 1px solid var(--border);
@@ -337,29 +411,6 @@
   .typing-dot:nth-child(3) { animation-delay: 0.4s; }
   @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
 
-  /* ── API KEY BANNER ── */
-  .api-banner {
-    background: var(--amber-light); border: 1px solid rgba(196,121,58,0.3);
-    border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 16px;
-    display: flex; align-items: flex-start; gap: 10px;
-  }
-  .api-banner-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-  .api-banner-text { font-size: 13px; color: var(--amber); line-height: 1.5; }
-  .api-banner-text strong { font-weight: 600; }
-  .api-key-input {
-    width: 100%; padding: 10px 14px; margin-top: 8px;
-    border: 1px solid rgba(196,121,58,0.4); border-radius: var(--radius-sm);
-    font-family: var(--font-ui); font-size: 13px; background: white; outline: none;
-    color: var(--ink);
-  }
-  .api-key-input:focus { border-color: var(--amber); }
-  .api-save-btn {
-    margin-top: 8px; padding: 8px 16px; background: var(--amber); color: white;
-    border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: var(--transition);
-  }
-  .api-save-btn:hover { background: #b36a2e; }
-
   /* ── FOOTER ── */
   footer {
     border-top: 1px solid var(--border); padding: 24px;
@@ -373,13 +424,13 @@
     .hero-visual { display: none; }
     .services-grid { grid-template-columns: repeat(2, 1fr); }
     .hero h1 { font-size: 30px; }
+    .provider-tabs { gap: 4px; }
+    .provider-tab { padding: 7px 10px; font-size: 12px; }
   }
 
-  /* ── LOADING SKELETON ── */
   .skeleton { background: linear-gradient(90deg, var(--cream) 25%, var(--cream-dark) 50%, var(--cream) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
   @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-  /* scrollbar for body */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--cream); }
   ::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 3px; }
@@ -421,7 +472,7 @@
     <div class="hero-stats">
       <div class="stat"><span class="stat-num">12+</span><span class="stat-label">Services</span></div>
       <div class="stat"><span class="stat-num">৳0</span><span class="stat-label">No Tout Needed</span></div>
-      <div class="stat"><span class="stat-num">২ভাষা</span><span class="stat-label">Bilingual</span></div>
+      <div class="stat"><span class="stat-num">৫+</span><span class="stat-label">AI Providers</span></div>
     </div>
   </div>
   <div class="hero-visual">
@@ -475,12 +526,21 @@
     <p class="section-title-bn">বাংলায় বা ইংরেজিতে লিখুন — যেভাবে সহজ মনে হয়</p>
   </div>
 
-  <div id="apiBanner" class="api-banner">
-    <div class="api-banner-icon">🔑</div>
-    <div class="api-banner-text">
-      <strong>Gemini API Key Required</strong> — Get your free key at <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--amber);text-decoration:underline">aistudio.google.com/apikey</a>. Stored only in your browser.<br>
-      <input type="password" class="api-key-input" id="apiKeyInput" placeholder="AIza..." />
-      <button class="api-save-btn" onclick="saveApiKey()">Save Key & Activate</button>
+  <!-- API SETUP PANEL -->
+  <div class="api-setup-panel" id="apiSetupPanel">
+    <div class="api-setup-header">
+      <div>
+        <h3>🔑 AI Provider Setup</h3>
+        <p>আপনার পছন্দের AI provider বেছে নিন এবং API key দিন। Keys শুধু আপনার browser-এ সংরক্ষিত থাকে।</p>
+      </div>
+    </div>
+    <div class="api-setup-body">
+      <div class="provider-tabs" id="providerTabs"></div>
+      <div id="providerFields"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <button class="api-save-btn" onclick="saveApiConfig()">✓ Save & Activate</button>
+        <button class="api-clear-btn" onclick="clearApiConfig()">Clear Key</button>
+      </div>
     </div>
   </div>
 
@@ -493,14 +553,12 @@
       </div>
       <div class="chat-header-text">
         <h3>সহায়তা Assistant</h3>
-        <p>Powered by Gemini 2.0 Flash · সরকারি কাগজের বিশেষজ্ঞ</p>
+        <p id="chatHeaderSub">সরকারি কাগজের বিশেষজ্ঞ · Configure AI provider above</p>
       </div>
       <div style="margin-left:auto"><div class="status-dot"></div></div>
     </div>
 
-    <div class="chat-messages" id="chatMessages">
-      <!-- Welcome message inserted by JS -->
-    </div>
+    <div class="chat-messages" id="chatMessages"></div>
 
     <div class="chat-input-area">
       <div class="input-service-tag" id="selectedServiceTags"></div>
@@ -525,14 +583,103 @@
 
 <footer>
   <p class="footer-bn">এই সেবাটি সাধারণ তথ্যের জন্য। সর্বশেষ তথ্যের জন্য সংশ্লিষ্ট সরকারি অফিসে যোগাযোগ করুন।</p>
-  <p>For official information, always verify with the respective government office. · Built with Claude AI</p>
+  <p>For official information, always verify with the respective government office. · Supports Gemini, OpenAI, Anthropic, Mistral, Groq & OpenRouter</p>
 </footer>
 
 <script>
+// ── PROVIDERS CONFIG ──
+const PROVIDERS = {
+  gemini: {
+    label: 'Gemini',
+    logo: '✦',
+    fields: [
+      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'AIza...', hint: 'Get free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>' },
+      { key: 'model', label: 'Model', type: 'select', options: [
+        { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash (Recommended)' },
+        { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' },
+        { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },
+      ]}
+    ],
+    call: callGemini,
+    statusLabel: (cfg) => `Gemini · ${cfg.model || 'gemini-2.0-flash'}`
+  },
+  openai: {
+    label: 'OpenAI',
+    logo: '⬡',
+    fields: [
+      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'sk-...', hint: 'Get key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a>' },
+      { key: 'model', label: 'Model', type: 'select', options: [
+        { value: 'gpt-4o-mini', label: 'GPT-4o Mini (Fast & Cheap)' },
+        { value: 'gpt-4o', label: 'GPT-4o' },
+        { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
+        { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
+      ]}
+    ],
+    call: callOpenAI,
+    statusLabel: (cfg) => `OpenAI · ${cfg.model || 'gpt-4o-mini'}`
+  },
+  anthropic: {
+    label: 'Claude',
+    logo: '◆',
+    fields: [
+      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'sk-ant-...', hint: 'Get key at <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>' },
+      { key: 'model', label: 'Model', type: 'select', options: [
+        { value: 'claude-3-5-haiku-20241022', label: 'Claude 3.5 Haiku (Fast)' },
+        { value: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet' },
+        { value: 'claude-3-opus-20240229', label: 'Claude 3 Opus' },
+      ]}
+    ],
+    call: callAnthropic,
+    statusLabel: (cfg) => `Claude · ${cfg.model || 'claude-3-5-haiku-20241022'}`
+  },
+  mistral: {
+    label: 'Mistral',
+    logo: '〜',
+    fields: [
+      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'your-mistral-key', hint: 'Get key at <a href="https://console.mistral.ai/api-keys" target="_blank">console.mistral.ai</a>' },
+      { key: 'model', label: 'Model', type: 'select', options: [
+        { value: 'mistral-small-latest', label: 'Mistral Small (Fast)' },
+        { value: 'mistral-medium-latest', label: 'Mistral Medium' },
+        { value: 'mistral-large-latest', label: 'Mistral Large' },
+        { value: 'open-mixtral-8x7b', label: 'Mixtral 8x7B' },
+      ]}
+    ],
+    call: callMistral,
+    statusLabel: (cfg) => `Mistral · ${cfg.model || 'mistral-small-latest'}`
+  },
+  groq: {
+    label: 'Groq',
+    logo: '⚡',
+    fields: [
+      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'gsk_...', hint: 'Get free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com</a>' },
+      { key: 'model', label: 'Model', type: 'select', options: [
+        { value: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B (Fastest)' },
+        { value: 'llama-3.1-70b-versatile', label: 'Llama 3.1 70B' },
+        { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B' },
+        { value: 'mixtral-8x7b-32768', label: 'Mixtral 8x7B' },
+        { value: 'gemma2-9b-it', label: 'Gemma 2 9B' },
+      ]}
+    ],
+    call: callGroq,
+    statusLabel: (cfg) => `Groq · ${cfg.model || 'llama-3.1-8b-instant'}`
+  },
+  openrouter: {
+    label: 'OpenRouter',
+    logo: '⇌',
+    fields: [
+      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'sk-or-...', hint: 'Get free key at <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a> — access 100+ models' },
+      { key: 'model', label: 'Model ID', type: 'text', placeholder: 'e.g. meta-llama/llama-3.1-8b-instruct:free', hint: 'Browse models at <a href="https://openrouter.ai/models" target="_blank">openrouter.ai/models</a>' },
+    ],
+    call: callOpenRouter,
+    statusLabel: (cfg) => `OpenRouter · ${cfg.model || 'custom model'}`
+  },
+};
+
 // ── STATE ──
 let currentLang = 'both';
 let selectedServices = [];
-let apiKey = localStorage.getItem('bd_helper_gemini_key') || '';
+let activeProvider = 'gemini';
+let apiConfigs = {}; // { providerId: { apiKey, model } }
 let chatHistory = [];
 
 const SERVICES = [
@@ -564,14 +711,14 @@ const SYSTEM_PROMPT = `You are a knowledgeable assistant specializing in Banglad
 ALWAYS respond in BOTH Bengali (বাংলা) and English unless the user speaks only one language.
 
 For every query, provide:
-1. **Which form/application** is needed (form number if known)
-2. **Which office** to visit (specific office name in Bengali and English)
-3. **Required documents** (exact list, numbered)
-4. **Government fee** (exact amount in BDT ৳)
-5. **Step-by-step process** (numbered steps, simple language)
-6. **Time it takes** (processing time)
-7. **Online option** if available (website URL)
-8. **Warning** about common mistakes or touts to avoid
+1. Which form/application is needed (form number if known)
+2. Which office to visit (specific office name in Bengali and English)
+3. Required documents (exact list, numbered)
+4. Government fee (exact amount in BDT ৳)
+5. Step-by-step process (numbered steps, simple language)
+6. Time it takes (processing time)
+7. Online option if available (website URL)
+8. Warning about common mistakes or touts to avoid
 
 Format your response with clear sections using these markers:
 [FORM] [OFFICE] [DOCUMENTS] [FEE] [STEPS] [TIME] [ONLINE] [WARNING]
@@ -580,24 +727,140 @@ Be specific to Bangladesh government processes as of 2024. Use both বাংল
 
 Services you know about:
 - NID: Election Commission, NID Services Wing, nidw.gov.bd
-- Birth Certificate: Local government offices, bdris.gov.bd  
+- Birth Certificate: Local government offices, bdris.gov.bd
 - Passport: Dept of Immigration & Passports, dip.gov.bd
 - BRTA: Bangladesh Road Transport Authority, brta.gov.bd
 - SSC/HSC: Education Boards, educationboardresults.gov.bd
 - Land: Sub-registrar offices, land.gov.bd
 - Trade License: City Corporation / Pourashova
 - TIN: NBR, nbr.gov.bd, incometax.gov.bd
-- Police Clearance: Bangladesh Police, police.gov.bd
-- Export/Import/Customs: NBR Customs, customs.gov.bd`;
+- Police Clearance: Bangladesh Police, police.gov.bd`;
 
 // ── INIT ──
 function init() {
+  loadSavedConfig();
+  renderProviderTabs();
+  renderProviderFields();
   renderServices();
   renderHints();
   renderWelcome();
-  if (apiKey) document.getElementById('apiBanner').style.display = 'none';
 }
 
+function loadSavedConfig() {
+  try {
+    const saved = localStorage.getItem('bd_helper_api_configs');
+    if (saved) apiConfigs = JSON.parse(saved);
+    const savedProvider = localStorage.getItem('bd_helper_active_provider');
+    if (savedProvider && PROVIDERS[savedProvider]) activeProvider = savedProvider;
+  } catch(e) {}
+}
+
+function saveConfig() {
+  localStorage.setItem('bd_helper_api_configs', JSON.stringify(apiConfigs));
+  localStorage.setItem('bd_helper_active_provider', activeProvider);
+}
+
+// ── PROVIDER UI ──
+function renderProviderTabs() {
+  const el = document.getElementById('providerTabs');
+  el.innerHTML = Object.entries(PROVIDERS).map(([id, p]) => `
+    <div class="provider-tab ${id === activeProvider ? 'active' : ''}" onclick="switchProvider('${id}')">
+      <span class="provider-logo">${p.logo}</span>
+      <span>${p.label}</span>
+      ${apiConfigs[id]?.apiKey ? '<span style="font-size:10px;color:var(--sage)">✓</span>' : ''}
+    </div>
+  `).join('');
+}
+
+function renderProviderFields() {
+  const provider = PROVIDERS[activeProvider];
+  const saved = apiConfigs[activeProvider] || {};
+  const el = document.getElementById('providerFields');
+
+  el.innerHTML = provider.fields.map(f => {
+    if (f.type === 'select') {
+      return `
+        <div class="field-group">
+          <label class="field-label">${f.label}</label>
+          <select class="field-select" id="pf_${f.key}">
+            ${f.options.map(o => `<option value="${o.value}" ${saved[f.key] === o.value || (!saved[f.key] && f.options[0].value === o.value) ? 'selected' : ''}>${o.label}</option>`).join('')}
+          </select>
+        </div>
+      `;
+    }
+    return `
+      <div class="field-group">
+        <label class="field-label">${f.label}</label>
+        <input type="${f.type}" class="field-input" id="pf_${f.key}" placeholder="${f.placeholder || ''}" value="${f.type === 'password' ? (saved[f.key] ? '••••••••' : '') : (saved[f.key] || '')}" />
+        ${f.hint ? `<div class="field-hint">${f.hint}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  // Show active status if key saved
+  if (saved.apiKey) {
+    el.innerHTML += `<div class="api-status-bar"><div class="dot"></div>Active: ${provider.statusLabel(saved)}</div>`;
+  }
+
+  updateChatHeader();
+}
+
+function switchProvider(id) {
+  activeProvider = id;
+  renderProviderTabs();
+  renderProviderFields();
+}
+
+function saveApiConfig() {
+  const provider = PROVIDERS[activeProvider];
+  const cfg = {};
+  let valid = true;
+
+  for (const f of provider.fields) {
+    const el = document.getElementById('pf_' + f.key);
+    let val = el?.value?.trim() || '';
+    // If password field shows dots, keep existing value
+    if (f.type === 'password' && val === '••••••••') {
+      val = apiConfigs[activeProvider]?.[f.key] || '';
+    }
+    if (f.type === 'password' && !val) { valid = false; break; }
+    cfg[f.key] = val;
+  }
+
+  if (!valid) {
+    alert('Please enter a valid API key.');
+    return;
+  }
+
+  apiConfigs[activeProvider] = cfg;
+  saveConfig();
+  renderProviderTabs();
+  renderProviderFields();
+  updateChatHeader();
+  addMessage('ai', `<div class="msg-bubble-bn">✅ ${PROVIDERS[activeProvider].label} সংযুক্ত হয়েছে! এখন আপনার প্রশ্নের উত্তর দিতে পারবো।</div>`);
+}
+
+function clearApiConfig() {
+  if (confirm('Remove saved key for ' + PROVIDERS[activeProvider].label + '?')) {
+    delete apiConfigs[activeProvider];
+    saveConfig();
+    renderProviderTabs();
+    renderProviderFields();
+    updateChatHeader();
+  }
+}
+
+function updateChatHeader() {
+  const cfg = apiConfigs[activeProvider];
+  const sub = document.getElementById('chatHeaderSub');
+  if (cfg?.apiKey) {
+    sub.textContent = 'Powered by ' + PROVIDERS[activeProvider].statusLabel(cfg) + ' · সরকারি কাগজের বিশেষজ্ঞ';
+  } else {
+    sub.textContent = 'সরকারি কাগজের বিশেষজ্ঞ · Configure AI provider above';
+  }
+}
+
+// ── SERVICES ──
 function renderServices() {
   const grid = document.getElementById('servicesGrid');
   grid.innerHTML = SERVICES.map(s => `
@@ -620,9 +883,17 @@ function renderHints() {
 function renderWelcome() {
   addMessage('ai', `
     <div class="msg-bubble-bn">আস্সালামু আলাইকুম! 👋</div>
-    <div style="margin-top:6px">আমি আপনাকে সরকারি কাগজপত্রের কাজে সাহায্য করতে এসেছি। উপরে থেকে আপনার প্রয়োজনীয় সেবাটি বেছে নিন এবং নিচে আপনার সমস্যাটি লিখুন।</div>
-    <div style="margin-top:8px; font-size:13px; color:var(--ink-muted)">Select a service above, then describe your situation below — in Bangla or English.</div>
+    <div style="margin-top:6px">আমি আপনাকে সরকারি কাগজপত্রের কাজে সাহায্য করতে এসেছি। উপরে আপনার পছন্দের AI provider বেছে API key দিন, তারপর নিচে সমস্যা লিখুন।</div>
+    <div style="margin-top:8px; font-size:13px; color:var(--ink-muted)">Choose your AI provider above (Gemini, OpenAI, Claude, Mistral, Groq, or OpenRouter), then describe your situation below in Bangla or English.</div>
   `);
+}
+
+// ── LANG ──
+function setLang(lang) {
+  currentLang = lang;
+  ['both','bn','en'].forEach(l => {
+    document.getElementById('btn-'+l)?.classList.toggle('active', l === lang);
+  });
 }
 
 // ── SERVICE SELECTION ──
@@ -644,31 +915,10 @@ function renderServiceTags() {
   }).join('');
 }
 
-// ── LANG ──
-function setLang(lang) {
-  currentLang = lang;
-  ['both','bn','en'].forEach(l => {
-    document.getElementById('btn-'+l)?.classList.toggle('active', l === lang);
-  });
-}
-
 // ── HINTS ──
 function useHint(text) {
   document.getElementById('userInput').value = text;
   document.getElementById('userInput').focus();
-}
-
-// ── API KEY ──
-function saveApiKey() {
-  const val = document.getElementById('apiKeyInput').value.trim();
-  if (val.startsWith('AIza') && val.length > 20) {
-    apiKey = val;
-    localStorage.setItem('bd_helper_gemini_key', val);
-    document.getElementById('apiBanner').style.display = 'none';
-    addMessage('ai', '<div class="msg-bubble-bn">✅ Gemini API key সংরক্ষিত হয়েছে। এখন আমি আপনার প্রশ্নের উত্তর দিতে পারবো!</div>');
-  } else {
-    alert('Please enter a valid Gemini API key (starts with AIza...). Get one free at aistudio.google.com/apikey');
-  }
 }
 
 // ── MESSAGING ──
@@ -714,65 +964,158 @@ async function sendMessage() {
   const text = input.value.trim();
   if (!text) return;
 
-  // Show user message
   const serviceContext = selectedServices.length
     ? `[Selected services: ${selectedServices.map(id => SERVICES.find(s=>s.id===id)?.en).join(', ')}]\n\n`
     : '';
+
   addMessage('user', `<div class="msg-bubble-bn">${escHtml(text)}</div>`);
   input.value = '';
   const btn = document.getElementById('sendBtn');
   btn.disabled = true;
 
-  if (!apiKey) {
+  const cfg = apiConfigs[activeProvider];
+  if (!cfg?.apiKey) {
     addMessage('ai', `
       <div class="msg-bubble-bn">⚠️ API key দেওয়া হয়নি।</div>
-      <div style="margin-top:6px;font-size:13px">Please add your Gemini API key above to get AI-powered responses. Get one free at <strong>aistudio.google.com/apikey</strong>. For now, here's a demo response:</div>
+      <div style="margin-top:6px;font-size:13px">Please configure your AI provider above to get responses. Here's a demo for NID queries:</div>
       ${buildDemoResponse(text, selectedServices)}
     `);
     btn.disabled = false;
     return;
   }
 
-  // Build Gemini conversation history
-  const geminiContents = chatHistory.map(m => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.content }]
-  }));
-  // Add current user message
   const fullUserMsg = serviceContext + text;
-  geminiContents.push({ role: 'user', parts: [{ text: fullUserMsg }] });
   chatHistory.push({ role: 'user', content: fullUserMsg });
   addTyping();
 
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-          contents: geminiContents,
-          generationConfig: { maxOutputTokens: 1500, temperature: 0.4 },
-        }),
-      }
-    );
-    const data = await res.json();
+    const reply = await PROVIDERS[activeProvider].call(cfg, chatHistory, SYSTEM_PROMPT);
     removeTyping();
-    if (data.error) throw new Error(data.error.message);
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response.';
     chatHistory.push({ role: 'assistant', content: reply });
     addMessage('ai', formatResponse(reply));
   } catch (err) {
     removeTyping();
-    addMessage('ai', `<div style="color:var(--red-soft)">⚠️ Error: ${escHtml(err.message)}</div><div style="margin-top:6px;font-size:13px">Check your Gemini API key or try again.</div>`);
+    addMessage('ai', `<div style="color:var(--red-soft)">⚠️ Error: ${escHtml(err.message)}</div><div style="margin-top:6px;font-size:13px">Check your API key or try again. Some providers may have CORS restrictions.</div>`);
   }
   btn.disabled = false;
 }
 
-// ── FORMAT AI RESPONSE ──
+// ── API CALLERS ──
+
+async function callGemini(cfg, history, systemPrompt) {
+  const contents = history.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
+  }));
+  const model = cfg.model || 'gemini-2.0-flash';
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cfg.apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents,
+        generationConfig: { maxOutputTokens: 1500, temperature: 0.4 },
+      }),
+    }
+  );
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response.';
+}
+
+async function callOpenAI(cfg, history, systemPrompt) {
+  const model = cfg.model || 'gpt-4o-mini';
+  const messages = [{ role: 'system', content: systemPrompt }, ...history];
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${cfg.apiKey}`,
+    },
+    body: JSON.stringify({ model, messages, max_tokens: 1500, temperature: 0.4 }),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.choices?.[0]?.message?.content || 'No response.';
+}
+
+async function callAnthropic(cfg, history, systemPrompt) {
+  const model = cfg.model || 'claude-3-5-haiku-20241022';
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': cfg.apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: history,
+    }),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+  return data.content?.[0]?.text || 'No response.';
+}
+
+async function callMistral(cfg, history, systemPrompt) {
+  const model = cfg.model || 'mistral-small-latest';
+  const messages = [{ role: 'system', content: systemPrompt }, ...history];
+  const res = await fetch('https://api.mistral.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${cfg.apiKey}`,
+    },
+    body: JSON.stringify({ model, messages, max_tokens: 1500, temperature: 0.4 }),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(typeof data.error === 'string' ? data.error : data.error.message || JSON.stringify(data.error));
+  if (data.message) throw new Error(data.message);
+  return data.choices?.[0]?.message?.content || 'No response.';
+}
+
+async function callGroq(cfg, history, systemPrompt) {
+  const model = cfg.model || 'llama-3.1-8b-instant';
+  const messages = [{ role: 'system', content: systemPrompt }, ...history];
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${cfg.apiKey}`,
+    },
+    body: JSON.stringify({ model, messages, max_tokens: 1500, temperature: 0.4 }),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(typeof data.error === 'string' ? data.error : data.error.message || JSON.stringify(data.error));
+  return data.choices?.[0]?.message?.content || 'No response.';
+}
+
+async function callOpenRouter(cfg, history, systemPrompt) {
+  const model = cfg.model || 'meta-llama/llama-3.1-8b-instruct:free';
+  const messages = [{ role: 'system', content: systemPrompt }, ...history];
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${cfg.apiKey}`,
+      'HTTP-Referer': window.location.href,
+      'X-Title': 'BD Document Helper',
+    },
+    body: JSON.stringify({ model, messages, max_tokens: 1500, temperature: 0.4 }),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(typeof data.error === 'string' ? data.error : data.error.message || JSON.stringify(data.error));
+  return data.choices?.[0]?.message?.content || 'No response.';
+}
+
+// ── FORMAT RESPONSE ──
 function formatResponse(text) {
-  // Parse sections
   const sections = {
     FORM: extract(text, 'FORM'), OFFICE: extract(text, 'OFFICE'),
     DOCUMENTS: extract(text, 'DOCUMENTS'), FEE: extract(text, 'FEE'),
@@ -782,7 +1125,6 @@ function formatResponse(text) {
 
   const hasSections = Object.values(sections).some(v => v);
   if (!hasSections) {
-    // Plain text fallback
     return `<div class="msg-bubble-bn" style="white-space:pre-wrap">${escHtml(text)}</div>`;
   }
 
@@ -839,11 +1181,6 @@ function formatResponse(text) {
   }
 
   html += `</div>`;
-
-  // Any remaining text
-  const remaining = text.replace(/\[.*?\][\s\S]*?(?=\[|$)/g, '').trim();
-  if (remaining) html += `<div style="margin-top:10px;font-size:13px;color:var(--ink-muted);line-height:1.6">${escHtml(remaining)}</div>`;
-
   return html;
 }
 
@@ -854,7 +1191,7 @@ function extract(text, key) {
 }
 
 function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ── DEMO RESPONSE ──
@@ -887,11 +1224,11 @@ function buildDemoResponse(query, services) {
       </div>
       <div class="result-section" style="background:rgba(196,75,58,0.04)">
         <div class="result-section-title" style="color:var(--red-soft)">⚠️ সতর্কতা</div>
-        <div class="result-item-bn" style="font-size:13px;color:var(--red-soft)">দালাল বা তৃতীয় পক্ষের সাহায্য নেওয়ার দরকার নেই। সরাসরি অফিসে যান। অতিরিক্ত টাকা দাবি করলে অভিযোগ করুন।</div>
+        <div class="result-item-bn" style="font-size:13px;color:var(--red-soft)">দালাল বা তৃতীয় পক্ষের সাহায্য নেওয়ার দরকার নেই। সরাসরি অফিসে যান।</div>
       </div>
     </div>`;
   }
-  return `<div style="font-size:14px;color:var(--ink-muted)">This is a demo. Add your API key above for personalized, AI-powered guidance on your specific situation.</div>`;
+  return `<div style="font-size:14px;color:var(--ink-muted)">This is a demo. Configure an AI provider above for personalized guidance.</div>`;
 }
 
 // ── START ──

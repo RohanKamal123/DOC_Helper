@@ -583,7 +583,7 @@
 
 <footer>
   <p class="footer-bn">এই সেবাটি সাধারণ তথ্যের জন্য। সর্বশেষ তথ্যের জন্য সংশ্লিষ্ট সরকারি অফিসে যোগাযোগ করুন।</p>
-  <p>For official information, always verify with the respective government office. · Supports Gemini, OpenAI, Anthropic, Mistral, Groq & OpenRouter</p>
+  <p>For official information, always verify with the respective government office. · Supports Gemini, OpenAI, Anthropic, Mistral, Groq, DeepSeek & OpenRouter</p>
 </footer>
 
 <script>
@@ -672,6 +672,19 @@ const PROVIDERS = {
     ],
     call: callOpenRouter,
     statusLabel: (cfg) => `OpenRouter · ${cfg.model || 'custom model'}`
+  },
+  deepseek: {
+    label: 'DeepSeek',
+    logo: '🐋',
+    fields: [
+      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'sk-...', hint: 'Get key at <a href="https://platform.deepseek.com/api_keys" target="_blank">platform.deepseek.com</a> — very affordable pricing' },
+      { key: 'model', label: 'Model', type: 'select', options: [
+        { value: 'deepseek-chat', label: 'DeepSeek V3 (Recommended)' },
+        { value: 'deepseek-reasoner', label: 'DeepSeek R1 (Reasoning)' },
+      ]}
+    ],
+    call: callDeepSeek,
+    statusLabel: (cfg) => `DeepSeek · ${cfg.model || 'deepseek-chat'}`
   },
 };
 
@@ -1106,6 +1119,22 @@ async function callOpenRouter(cfg, history, systemPrompt) {
       'Authorization': `Bearer ${cfg.apiKey}`,
       'HTTP-Referer': window.location.href,
       'X-Title': 'BD Document Helper',
+    },
+    body: JSON.stringify({ model, messages, max_tokens: 1500, temperature: 0.4 }),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(typeof data.error === 'string' ? data.error : data.error.message || JSON.stringify(data.error));
+  return data.choices?.[0]?.message?.content || 'No response.';
+}
+
+async function callDeepSeek(cfg, history, systemPrompt) {
+  const model = cfg.model || 'deepseek-chat';
+  const messages = [{ role: 'system', content: systemPrompt }, ...history];
+  const res = await fetch('https://api.deepseek.com/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${cfg.apiKey}`,
     },
     body: JSON.stringify({ model, messages, max_tokens: 1500, temperature: 0.4 }),
   });

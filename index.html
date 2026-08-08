@@ -472,7 +472,7 @@
     <div class="hero-stats">
       <div class="stat"><span class="stat-num">12+</span><span class="stat-label">Services</span></div>
       <div class="stat"><span class="stat-num">৳0</span><span class="stat-label">No Tout Needed</span></div>
-      <div class="stat"><span class="stat-num">৫+</span><span class="stat-label">AI Providers</span></div>
+      <div class="stat"><span class="stat-num">✓</span><span class="stat-label">Sourced Answers</span></div>
     </div>
   </div>
   <div class="hero-visual">
@@ -530,13 +530,17 @@
   <div class="api-setup-panel" id="apiSetupPanel">
     <div class="api-setup-header">
       <div>
-        <h3>🔑 AI Provider Setup</h3>
-        <p>আপনার পছন্দের AI provider বেছে নিন এবং API key দিন। Keys শুধু আপনার browser-এ সংরক্ষিত থাকে।</p>
+        <h3>🔑 DeepSeek API Key Setup</h3>
+        <p>আপনার DeepSeek API key দিন। Key শুধু আপনার browser-এ সংরক্ষিত থাকে এবং প্রতিটি অনুরোধে সরাসরি পাঠানো হয় — আমাদের সার্ভারে সংরক্ষিত হয় না।</p>
       </div>
     </div>
     <div class="api-setup-body">
-      <div class="provider-tabs" id="providerTabs"></div>
-      <div id="providerFields"></div>
+      <div class="field-group">
+        <label class="field-label">DeepSeek API Key</label>
+        <input type="password" class="field-input" id="pf_apiKey" placeholder="sk-..." />
+        <div class="field-hint">Get a free key at <a href="https://platform.deepseek.com/api_keys" target="_blank">platform.deepseek.com/api_keys</a></div>
+      </div>
+      <div id="apiStatusBar"></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
         <button class="api-save-btn" onclick="saveApiConfig()">✓ Save & Activate</button>
         <button class="api-clear-btn" onclick="clearApiConfig()">Clear Key</button>
@@ -583,116 +587,14 @@
 
 <footer>
   <p class="footer-bn">এই সেবাটি সাধারণ তথ্যের জন্য। সর্বশেষ তথ্যের জন্য সংশ্লিষ্ট সরকারি অফিসে যোগাযোগ করুন।</p>
-  <p>For official information, always verify with the respective government office. · Supports Gemini, OpenAI, Anthropic, Mistral, Groq, DeepSeek & OpenRouter</p>
+  <p>For official information, always verify with the respective government office. · Powered by DeepSeek with a verified, sourced database — not model guesses.</p>
 </footer>
 
 <script>
-// ── PROVIDERS CONFIG ──
-const PROVIDERS = {
-  gemini: {
-    label: 'Gemini',
-    logo: '✦',
-    fields: [
-      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'AIza...', hint: 'Get free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>' },
-      { key: 'model', label: 'Model', type: 'select', options: [
-        { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash (Recommended)' },
-        { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' },
-        { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },
-      ]}
-    ],
-    call: callGemini,
-    statusLabel: (cfg) => `Gemini · ${cfg.model || 'gemini-2.0-flash'}`
-  },
-  openai: {
-    label: 'OpenAI',
-    logo: '⬡',
-    fields: [
-      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'sk-...', hint: 'Get key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a>' },
-      { key: 'model', label: 'Model', type: 'select', options: [
-        { value: 'gpt-4o-mini', label: 'GPT-4o Mini (Fast & Cheap)' },
-        { value: 'gpt-4o', label: 'GPT-4o' },
-        { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
-        { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
-      ]}
-    ],
-    call: callOpenAI,
-    statusLabel: (cfg) => `OpenAI · ${cfg.model || 'gpt-4o-mini'}`
-  },
-  anthropic: {
-    label: 'Claude',
-    logo: '◆',
-    fields: [
-      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'sk-ant-...', hint: 'Get key at <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>' },
-      { key: 'model', label: 'Model', type: 'select', options: [
-        { value: 'claude-3-5-haiku-20241022', label: 'Claude 3.5 Haiku (Fast)' },
-        { value: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet' },
-        { value: 'claude-3-opus-20240229', label: 'Claude 3 Opus' },
-      ]}
-    ],
-    call: callAnthropic,
-    statusLabel: (cfg) => `Claude · ${cfg.model || 'claude-3-5-haiku-20241022'}`
-  },
-  mistral: {
-    label: 'Mistral',
-    logo: '〜',
-    fields: [
-      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'your-mistral-key', hint: 'Get key at <a href="https://console.mistral.ai/api-keys" target="_blank">console.mistral.ai</a>' },
-      { key: 'model', label: 'Model', type: 'select', options: [
-        { value: 'mistral-small-latest', label: 'Mistral Small (Fast)' },
-        { value: 'mistral-medium-latest', label: 'Mistral Medium' },
-        { value: 'mistral-large-latest', label: 'Mistral Large' },
-        { value: 'open-mixtral-8x7b', label: 'Mixtral 8x7B' },
-      ]}
-    ],
-    call: callMistral,
-    statusLabel: (cfg) => `Mistral · ${cfg.model || 'mistral-small-latest'}`
-  },
-  groq: {
-    label: 'Groq',
-    logo: '⚡',
-    fields: [
-      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'gsk_...', hint: 'Get free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com</a>' },
-      { key: 'model', label: 'Model', type: 'select', options: [
-        { value: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B (Fastest)' },
-        { value: 'llama-3.1-70b-versatile', label: 'Llama 3.1 70B' },
-        { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B' },
-        { value: 'mixtral-8x7b-32768', label: 'Mixtral 8x7B' },
-        { value: 'gemma2-9b-it', label: 'Gemma 2 9B' },
-      ]}
-    ],
-    call: callGroq,
-    statusLabel: (cfg) => `Groq · ${cfg.model || 'llama-3.1-8b-instant'}`
-  },
-  openrouter: {
-    label: 'OpenRouter',
-    logo: '⇌',
-    fields: [
-      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'sk-or-...', hint: 'Get free key at <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a> — access 100+ models' },
-      { key: 'model', label: 'Model ID', type: 'text', placeholder: 'e.g. meta-llama/llama-3.1-8b-instruct:free', hint: 'Browse models at <a href="https://openrouter.ai/models" target="_blank">openrouter.ai/models</a>' },
-    ],
-    call: callOpenRouter,
-    statusLabel: (cfg) => `OpenRouter · ${cfg.model || 'custom model'}`
-  },
-  deepseek: {
-    label: 'DeepSeek',
-    logo: '🐋',
-    fields: [
-      { key: 'apiKey', label: 'API Key', type: 'password', placeholder: 'sk-...', hint: 'Get key at <a href="https://platform.deepseek.com/api_keys" target="_blank">platform.deepseek.com</a> — very affordable pricing' },
-      { key: 'model', label: 'Model', type: 'select', options: [
-        { value: 'deepseek-chat', label: 'DeepSeek V3 (Recommended)' },
-        { value: 'deepseek-reasoner', label: 'DeepSeek R1 (Reasoning)' },
-      ]}
-    ],
-    call: callDeepSeek,
-    statusLabel: (cfg) => `DeepSeek · ${cfg.model || 'deepseek-chat'}`
-  },
-};
-
 // ── STATE ──
 let currentLang = 'both';
 let selectedServices = [];
-let activeProvider = 'gemini';
-let apiConfigs = {}; // { providerId: { apiKey, model } }
+let deepseekApiKey = '';
 let chatHistory = [];
 
 const SERVICES = [
@@ -719,161 +621,69 @@ const HINTS = [
   'I need police clearance for abroad',
 ];
 
-const SYSTEM_PROMPT = `You are a knowledgeable assistant specializing in Bangladesh government document services. You help citizens navigate bureaucratic processes clearly and accurately.
-
-ALWAYS respond in BOTH Bengali (বাংলা) and English unless the user speaks only one language.
-
-For every query, provide:
-1. Which form/application is needed (form number if known)
-2. Which office to visit (specific office name in Bengali and English)
-3. Required documents (exact list, numbered)
-4. Government fee (exact amount in BDT ৳)
-5. Step-by-step process (numbered steps, simple language)
-6. Time it takes (processing time)
-7. Online option if available (website URL)
-8. Warning about common mistakes or touts to avoid
-
-Format your response with clear sections using these markers:
-[FORM] [OFFICE] [DOCUMENTS] [FEE] [STEPS] [TIME] [ONLINE] [WARNING]
-
-Be specific to Bangladesh government processes as of 2024. Use both বাংলা and English for all section content. Keep tone warm, helpful, and empowering — like helping a family member.
-
-Services you know about:
-- NID: Election Commission, NID Services Wing, nidw.gov.bd
-- Birth Certificate: Local government offices, bdris.gov.bd
-- Passport: Dept of Immigration & Passports, dip.gov.bd
-- BRTA: Bangladesh Road Transport Authority, brta.gov.bd
-- SSC/HSC: Education Boards, educationboardresults.gov.bd
-- Land: Sub-registrar offices, land.gov.bd
-- Trade License: City Corporation / Pourashova
-- TIN: NBR, nbr.gov.bd, incometax.gov.bd
-- Police Clearance: Bangladesh Police, police.gov.bd`;
-
 // ── INIT ──
 function init() {
   loadSavedConfig();
-  renderProviderTabs();
-  renderProviderFields();
   renderServices();
   renderHints();
+  renderApiPanel();
+  updateChatHeader();
   renderWelcome();
 }
 
 function loadSavedConfig() {
   try {
-    const saved = localStorage.getItem('bd_helper_api_configs');
-    if (saved) apiConfigs = JSON.parse(saved);
-    const savedProvider = localStorage.getItem('bd_helper_active_provider');
-    if (savedProvider && PROVIDERS[savedProvider]) activeProvider = savedProvider;
-  } catch(e) {}
+    deepseekApiKey = localStorage.getItem('bd_helper_deepseek_key') || '';
+  } catch {}
 }
 
-function saveConfig() {
-  localStorage.setItem('bd_helper_api_configs', JSON.stringify(apiConfigs));
-  localStorage.setItem('bd_helper_active_provider', activeProvider);
+function saveConfigToStorage() {
+  try {
+    localStorage.setItem('bd_helper_deepseek_key', deepseekApiKey);
+  } catch {}
 }
 
-// ── PROVIDER UI ──
-function renderProviderTabs() {
-  const el = document.getElementById('providerTabs');
-  el.innerHTML = Object.entries(PROVIDERS).map(([id, p]) => `
-    <div class="provider-tab ${id === activeProvider ? 'active' : ''}" onclick="switchProvider('${id}')">
-      <span class="provider-logo">${p.logo}</span>
-      <span>${p.label}</span>
-      ${apiConfigs[id]?.apiKey ? '<span style="font-size:10px;color:var(--sage)">✓</span>' : ''}
-    </div>
-  `).join('');
-}
-
-function renderProviderFields() {
-  const provider = PROVIDERS[activeProvider];
-  const saved = apiConfigs[activeProvider] || {};
-  const el = document.getElementById('providerFields');
-
-  el.innerHTML = provider.fields.map(f => {
-    if (f.type === 'select') {
-      return `
-        <div class="field-group">
-          <label class="field-label">${f.label}</label>
-          <select class="field-select" id="pf_${f.key}">
-            ${f.options.map(o => `<option value="${o.value}" ${saved[f.key] === o.value || (!saved[f.key] && f.options[0].value === o.value) ? 'selected' : ''}>${o.label}</option>`).join('')}
-          </select>
-        </div>
-      `;
-    }
-    return `
-      <div class="field-group">
-        <label class="field-label">${f.label}</label>
-        <input type="${f.type}" class="field-input" id="pf_${f.key}" placeholder="${f.placeholder || ''}" value="${f.type === 'password' ? (saved[f.key] ? '••••••••' : '') : (saved[f.key] || '')}" />
-        ${f.hint ? `<div class="field-hint">${f.hint}</div>` : ''}
-      </div>
-    `;
-  }).join('');
-
-  // Show active status if key saved
-  if (saved.apiKey) {
-    el.innerHTML += `<div class="api-status-bar"><div class="dot"></div>Active: ${provider.statusLabel(saved)}</div>`;
+// ── API KEY PANEL ──
+function renderApiPanel() {
+  const input = document.getElementById('pf_apiKey');
+  if (input && deepseekApiKey) input.value = deepseekApiKey;
+  const statusEl = document.getElementById('apiStatusBar');
+  if (statusEl) {
+    statusEl.innerHTML = deepseekApiKey
+      ? `<div class="api-status-bar"><div class="dot"></div>Active: DeepSeek</div>`
+      : '';
   }
-
-  updateChatHeader();
-}
-
-function switchProvider(id) {
-  activeProvider = id;
-  renderProviderTabs();
-  renderProviderFields();
 }
 
 function saveApiConfig() {
-  const provider = PROVIDERS[activeProvider];
-  const cfg = {};
-  let valid = true;
-
-  for (const f of provider.fields) {
-    const el = document.getElementById('pf_' + f.key);
-    let val = el?.value?.trim() || '';
-    // If password field shows dots, keep existing value
-    if (f.type === 'password' && val === '••••••••') {
-      val = apiConfigs[activeProvider]?.[f.key] || '';
-    }
-    if (f.type === 'password' && !val) { valid = false; break; }
-    cfg[f.key] = val;
-  }
-
-  if (!valid) {
-    alert('Please enter a valid API key.');
-    return;
-  }
-
-  apiConfigs[activeProvider] = cfg;
-  saveConfig();
-  renderProviderTabs();
-  renderProviderFields();
+  const input = document.getElementById('pf_apiKey');
+  const value = (input?.value || '').trim();
+  if (!value) { alert('Please enter your DeepSeek API key.'); return; }
+  deepseekApiKey = value;
+  saveConfigToStorage();
+  renderApiPanel();
   updateChatHeader();
-  addMessage('ai', `<div class="msg-bubble-bn">✅ ${PROVIDERS[activeProvider].label} সংযুক্ত হয়েছে! এখন আপনার প্রশ্নের উত্তর দিতে পারবো।</div>`);
+  addMessage('ai', `<div class="msg-bubble-bn">✅ DeepSeek সংযুক্ত হয়েছে! এখন আপনার প্রশ্নের উত্তর দিতে পারবো।</div>`);
 }
 
 function clearApiConfig() {
-  if (confirm('Remove saved key for ' + PROVIDERS[activeProvider].label + '?')) {
-    delete apiConfigs[activeProvider];
-    saveConfig();
-    renderProviderTabs();
-    renderProviderFields();
-    updateChatHeader();
-  }
+  deepseekApiKey = '';
+  saveConfigToStorage();
+  const input = document.getElementById('pf_apiKey');
+  if (input) input.value = '';
+  renderApiPanel();
+  updateChatHeader();
 }
 
 function updateChatHeader() {
-  const cfg = apiConfigs[activeProvider];
   const sub = document.getElementById('chatHeaderSub');
-  if (cfg?.apiKey) {
-    sub.textContent = 'Powered by ' + PROVIDERS[activeProvider].statusLabel(cfg) + ' · সরকারি কাগজের বিশেষজ্ঞ';
-  } else {
-    sub.textContent = 'সরকারি কাগজের বিশেষজ্ঞ · Configure AI provider above';
-  }
+  if (!sub) return;
+  sub.textContent = deepseekApiKey
+    ? 'সরকারি কাগজের বিশেষজ্ঞ · DeepSeek connected'
+    : 'সরকারি কাগজের বিশেষজ্ঞ · Configure your DeepSeek API key above';
 }
 
-// ── SERVICES ──
+// ── SERVICES GRID ──
 function renderServices() {
   const grid = document.getElementById('servicesGrid');
   grid.innerHTML = SERVICES.map(s => `
@@ -886,6 +696,7 @@ function renderServices() {
   `).join('');
 }
 
+// ── HINTS ──
 function renderHints() {
   const el = document.getElementById('hintChips');
   el.innerHTML = HINTS.map(h => `
@@ -896,8 +707,8 @@ function renderHints() {
 function renderWelcome() {
   addMessage('ai', `
     <div class="msg-bubble-bn">আস্সালামু আলাইকুম! 👋</div>
-    <div style="margin-top:6px">আমি আপনাকে সরকারি কাগজপত্রের কাজে সাহায্য করতে এসেছি। উপরে আপনার পছন্দের AI provider বেছে API key দিন, তারপর নিচে সমস্যা লিখুন।</div>
-    <div style="margin-top:8px; font-size:13px; color:var(--ink-muted)">Choose your AI provider above (Gemini, OpenAI, Claude, Mistral, Groq, or OpenRouter), then describe your situation below in Bangla or English.</div>
+    <div style="margin-top:6px">আমি আপনাকে সরকারি কাগজপত্রের কাজে সাহায্য করতে এসেছি — সঠিক অফিস, ফি ও ধাপ যাচাইকৃত তথ্যভান্ডার থেকে দেখাবো, অনুমান নয়। উপরে আপনার DeepSeek API key দিন, তারপর নিচে সমস্যা লিখুন।</div>
+    <div style="margin-top:8px; font-size:13px; color:var(--ink-muted)">Add your free DeepSeek API key above, then describe your situation below in Bangla or English. Answers cite their source and last-verified date.</div>
   `);
 }
 
@@ -977,235 +788,136 @@ async function sendMessage() {
   const text = input.value.trim();
   if (!text) return;
 
-  const serviceContext = selectedServices.length
-    ? `[Selected services: ${selectedServices.map(id => SERVICES.find(s=>s.id===id)?.en).join(', ')}]\n\n`
-    : '';
-
   addMessage('user', `<div class="msg-bubble-bn">${escHtml(text)}</div>`);
   input.value = '';
   const btn = document.getElementById('sendBtn');
   btn.disabled = true;
 
-  const cfg = apiConfigs[activeProvider];
-  if (!cfg?.apiKey) {
+  if (!deepseekApiKey) {
     addMessage('ai', `
-      <div class="msg-bubble-bn">⚠️ API key দেওয়া হয়নি।</div>
-      <div style="margin-top:6px;font-size:13px">Please configure your AI provider above to get responses. Here's a demo for NID queries:</div>
-      ${buildDemoResponse(text, selectedServices)}
+      <div class="msg-bubble-bn">⚠️ DeepSeek API key দেওয়া হয়নি।</div>
+      <div style="margin-top:6px;font-size:13px">Please add your free DeepSeek API key above to get verified, sourced answers.</div>
     `);
     btn.disabled = false;
     return;
   }
 
+  const serviceContext = selectedServices.length
+    ? `[Selected services: ${selectedServices.map(id => SERVICES.find(s=>s.id===id)?.en).join(', ')}]\n\n`
+    : '';
   const fullUserMsg = serviceContext + text;
-  chatHistory.push({ role: 'user', content: fullUserMsg });
-  addTyping();
 
+  addTyping();
   try {
-    const reply = await PROVIDERS[activeProvider].call(cfg, chatHistory, SYSTEM_PROMPT);
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: fullUserMsg,
+        history: chatHistory,
+        deepseekApiKey,
+      }),
+    });
+    const data = await res.json();
     removeTyping();
-    chatHistory.push({ role: 'assistant', content: reply });
-    addMessage('ai', formatResponse(reply));
+
+    if (!res.ok) {
+      addMessage('ai', `<div style="color:var(--red-soft)">⚠️ Error: ${escHtml(data.error || 'Something went wrong.')}</div>`);
+      btn.disabled = false;
+      return;
+    }
+
+    chatHistory.push({ role: 'user', content: fullUserMsg });
+    chatHistory.push({ role: 'assistant', content: data.answer_text || '' });
+    if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+
+    addMessage('ai', renderServiceCard(data));
   } catch (err) {
     removeTyping();
-    addMessage('ai', `<div style="color:var(--red-soft)">⚠️ Error: ${escHtml(err.message)}</div><div style="margin-top:6px;font-size:13px">Check your API key or try again. Some providers may have CORS restrictions.</div>`);
+    addMessage('ai', `<div style="color:var(--red-soft)">⚠️ Error: ${escHtml(err.message)}</div><div style="margin-top:6px;font-size:13px">Check your connection and try again.</div>`);
   }
   btn.disabled = false;
 }
 
-// ── API CALLERS ──
+// ── RENDER STRUCTURED RESPONSE ──
+// Builds the AI reply directly from the backend's typed JSON (offices,
+// fees, documents, steps, forms, portals, sources) instead of parsing
+// bracket-marker prose — every fact here traces back to a DB row or a live
+// search result, never to the model's own restatement of it.
+function renderServiceCard(data) {
+  let html = `<div class="msg-bubble-bn" style="white-space:pre-wrap">${escHtml(data.answer_text || '')}</div>`;
 
-async function callGemini(cfg, history, systemPrompt) {
-  const contents = history.map(m => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.content }]
-  }));
-  const model = cfg.model || 'gemini-2.0-flash';
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cfg.apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemPrompt }] },
-        contents,
-        generationConfig: { maxOutputTokens: 1500, temperature: 0.4 },
-      }),
-    }
+  const hasStructuredData = Boolean(
+    data.offices?.length || data.fees?.length || data.documents?.length ||
+    data.steps?.length || data.forms?.length || data.online_portals?.length
   );
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response.';
-}
+  if (!hasStructuredData) return html;
 
-async function callOpenAI(cfg, history, systemPrompt) {
-  const model = cfg.model || 'gpt-4o-mini';
-  const messages = [{ role: 'system', content: systemPrompt }, ...history];
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${cfg.apiKey}`,
-    },
-    body: JSON.stringify({ model, messages, max_tokens: 1500, temperature: 0.4 }),
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.choices?.[0]?.message?.content || 'No response.';
-}
+  const badges = [];
+  if (data.offices?.[0]) badges.push(`<span class="office-badge">🏛️ ${escHtml(data.offices[0].name_en)}</span>`);
+  if (data.fees?.[0]) badges.push(`<span class="fee-badge">৳ ${escHtml(String(data.fees[0].amount_bdt))}</span>`);
+  if (badges.length) html += `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${badges.join('')}</div>`;
 
-async function callAnthropic(cfg, history, systemPrompt) {
-  const model = cfg.model || 'claude-3-5-haiku-20241022';
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': cfg.apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 1500,
-      system: systemPrompt,
-      messages: history,
-    }),
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-  return data.content?.[0]?.text || 'No response.';
-}
+  html += `<div class="result-card" style="margin-top:10px">`;
 
-async function callMistral(cfg, history, systemPrompt) {
-  const model = cfg.model || 'mistral-small-latest';
-  const messages = [{ role: 'system', content: systemPrompt }, ...history];
-  const res = await fetch('https://api.mistral.ai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${cfg.apiKey}`,
-    },
-    body: JSON.stringify({ model, messages, max_tokens: 1500, temperature: 0.4 }),
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(typeof data.error === 'string' ? data.error : data.error.message || JSON.stringify(data.error));
-  if (data.message) throw new Error(data.message);
-  return data.choices?.[0]?.message?.content || 'No response.';
-}
-
-async function callGroq(cfg, history, systemPrompt) {
-  const model = cfg.model || 'llama-3.1-8b-instant';
-  const messages = [{ role: 'system', content: systemPrompt }, ...history];
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${cfg.apiKey}`,
-    },
-    body: JSON.stringify({ model, messages, max_tokens: 1500, temperature: 0.4 }),
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(typeof data.error === 'string' ? data.error : data.error.message || JSON.stringify(data.error));
-  return data.choices?.[0]?.message?.content || 'No response.';
-}
-
-async function callOpenRouter(cfg, history, systemPrompt) {
-  const model = cfg.model || 'meta-llama/llama-3.1-8b-instruct:free';
-  const messages = [{ role: 'system', content: systemPrompt }, ...history];
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${cfg.apiKey}`,
-      'HTTP-Referer': window.location.href,
-      'X-Title': 'BD Document Helper',
-    },
-    body: JSON.stringify({ model, messages, max_tokens: 1500, temperature: 0.4 }),
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(typeof data.error === 'string' ? data.error : data.error.message || JSON.stringify(data.error));
-  return data.choices?.[0]?.message?.content || 'No response.';
-}
-
-async function callDeepSeek(cfg, history, systemPrompt) {
-  const model = cfg.model || 'deepseek-chat';
-  const messages = [{ role: 'system', content: systemPrompt }, ...history];
-  const res = await fetch('https://api.deepseek.com/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${cfg.apiKey}`,
-    },
-    body: JSON.stringify({ model, messages, max_tokens: 1500, temperature: 0.4 }),
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(typeof data.error === 'string' ? data.error : data.error.message || JSON.stringify(data.error));
-  return data.choices?.[0]?.message?.content || 'No response.';
-}
-
-// ── FORMAT RESPONSE ──
-function formatResponse(text) {
-  const sections = {
-    FORM: extract(text, 'FORM'), OFFICE: extract(text, 'OFFICE'),
-    DOCUMENTS: extract(text, 'DOCUMENTS'), FEE: extract(text, 'FEE'),
-    STEPS: extract(text, 'STEPS'), TIME: extract(text, 'TIME'),
-    ONLINE: extract(text, 'ONLINE'), WARNING: extract(text, 'WARNING'),
-  };
-
-  const hasSections = Object.values(sections).some(v => v);
-  if (!hasSections) {
-    return `<div class="msg-bubble-bn" style="white-space:pre-wrap">${escHtml(text)}</div>`;
+  if (data.offices?.length) {
+    html += `<div class="result-section">
+      <div class="result-section-title">🏛️ অফিস · Office</div>
+      ${data.offices.map(o => `
+        <div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">
+          ${escHtml(o.name_en)}${o.address_en ? ' — ' + escHtml(o.address_en) : ''}${o.phone ? ' · ☎ ' + escHtml(o.phone) : ''}
+          ${o.match_level && o.match_level.includes('fallback') ? '<div style="font-size:11px;color:var(--ink-faint);margin-top:2px">No exact local office on file — showing the closest available option.</div>' : ''}
+        </div></div>
+      `).join('')}
+    </div>`;
   }
 
-  let html = '';
-
-  if (sections.OFFICE || sections.FEE) {
-    html += `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">`;
-    if (sections.OFFICE) html += `<span class="office-badge">🏛️ ${escHtml(sections.OFFICE.split('\n')[0])}</span>`;
-    if (sections.FEE) html += `<span class="fee-badge">৳ ${escHtml(sections.FEE.split('\n')[0])}</span>`;
-    if (sections.TIME) html += `<span class="fee-badge" style="background:#EAF2ED;color:#4A7C59">⏱ ${escHtml(sections.TIME.split('\n')[0])}</span>`;
-    html += `</div>`;
+  if (data.fees?.length) {
+    html += `<div class="result-section">
+      <div class="result-section-title">৳ ফি · Fees</div>
+      ${data.fees.map(f => `<div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">${escHtml(f.fee_type.replace(/_/g,' '))}: ৳${escHtml(String(f.amount_bdt))}${f.notes_en ? ' — ' + escHtml(f.notes_en) : ''}</div></div>`).join('')}
+    </div>`;
   }
 
-  html += `<div class="result-card">`;
-
-  if (sections.DOCUMENTS) {
+  if (data.documents?.length) {
     html += `<div class="result-section">
       <div class="result-section-title">📄 প্রয়োজনীয় কাগজপত্র · Required Documents</div>
-      ${sections.DOCUMENTS.split('\n').filter(l=>l.trim()).map(l =>
-        `<div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">${escHtml(l.replace(/^[\d\.\-\*\s]+/, ''))}</div></div>`
-      ).join('')}
+      ${data.documents.map(d => `<div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">${escHtml(d.document_en)}${d.is_mandatory === false ? ' (optional)' : ''}</div></div>`).join('')}
     </div>`;
   }
 
-  if (sections.STEPS) {
-    const steps = sections.STEPS.split('\n').filter(l => l.trim());
+  if (data.steps?.length) {
     html += `<div class="result-section">
       <div class="result-section-title">📍 ধাপসমূহ · Steps</div>
-      ${steps.map((step, i) =>
-        `<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text step-text-bn">${escHtml(step.replace(/^[\d\.\-\*\s]+/, ''))}</div></div>`
-      ).join('')}
+      ${data.steps.map(s => `<div class="step-row"><div class="step-num">${s.step_number}</div><div class="step-text step-text-bn">${escHtml(s.title_en)}${s.is_online ? ' 🌐' : ''}</div></div>`).join('')}
     </div>`;
   }
 
-  if (sections.FORM) {
+  if (data.forms?.length) {
     html += `<div class="result-section">
-      <div class="result-section-title">📝 ফর্ম · Form</div>
-      <div class="result-item-bn" style="font-size:13px">${escHtml(sections.FORM)}</div>
+      <div class="result-section-title">📝 ফর্ম · Forms</div>
+      ${data.forms.map(f => `<div class="result-item-bn" style="font-size:13px">${escHtml(f.form_name)}${f.download_url ? ` — <a href="${safeUrl(f.download_url)}" target="_blank" rel="noopener">Download</a>` : ''}</div>`).join('')}
     </div>`;
   }
 
-  if (sections.ONLINE) {
+  if (data.online_portals?.length) {
     html += `<div class="result-section">
       <div class="result-section-title">🌐 অনলাইন সুবিধা · Online</div>
-      <div class="result-item-bn" style="font-size:13px">${escHtml(sections.ONLINE)}</div>
+      ${data.online_portals.map(p => `<div class="result-item-bn" style="font-size:13px"><a href="${safeUrl(p.url)}" target="_blank" rel="noopener">${escHtml(p.portal_name)}</a>${p.description_en ? ' — ' + escHtml(p.description_en) : ''}</div>`).join('')}
     </div>`;
   }
 
-  if (sections.WARNING) {
-    html += `<div class="result-section" style="background:rgba(196,75,58,0.04)">
-      <div class="result-section-title" style="color:var(--red-soft)">⚠️ সতর্কতা · Warning</div>
-      <div class="result-item-bn" style="font-size:13px;color:var(--red-soft)">${escHtml(sections.WARNING)}</div>
+  if (data.web_search_used && data.search_results?.length) {
+    html += `<div class="result-section">
+      <div class="result-section-title">🔎 লাইভ সার্চ ফলাফল · Live Search Results</div>
+      ${data.search_results.map(r => `<div class="result-item-bn" style="font-size:13px"><a href="${safeUrl(r.url)}" target="_blank" rel="noopener">${escHtml(r.title)}</a>${r.snippet ? `<div style="color:var(--ink-muted);font-size:12px;margin-top:2px">${escHtml(r.snippet)}</div>` : ''}</div>`).join('')}
+    </div>`;
+  }
+
+  if (data.sources?.length) {
+    html += `<div class="result-section" style="background:rgba(0,0,0,0.02)">
+      <div class="result-section-title" style="font-size:11px;color:var(--ink-faint)">সূত্র · Sources</div>
+      ${data.sources.map(s => `<div style="font-size:11px;color:var(--ink-faint);margin-top:3px"><a href="${safeUrl(s.url)}" target="_blank" rel="noopener" style="color:inherit">${escHtml(s.title || s.publisher || s.url)}</a> · verified ${escHtml(s.last_verified_date)}</div>`).join('')}
     </div>`;
   }
 
@@ -1213,51 +925,21 @@ function formatResponse(text) {
   return html;
 }
 
-function extract(text, key) {
-  const re = new RegExp(`\\[${key}\\]([\\s\\S]*?)(?=\\[|$)`, 'i');
-  const m = text.match(re);
-  return m ? m[1].trim() : '';
-}
-
+// ── ESCAPE ──
 function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-// ── DEMO RESPONSE ──
-function buildDemoResponse(query, services) {
-  const isNID = query.toLowerCase().includes('nid') || query.includes('পরিচয়পত্র') || services.includes('nid');
-  if (isNID) {
-    return `<div class="result-card" style="margin-top:10px">
-      <div class="result-section">
-        <div class="result-section-title">🏛️ অফিস · Office</div>
-        <span class="office-badge">নিকটস্থ উপজেলা নির্বাচন অফিস · Upazila EC Office</span>
-      </div>
-      <div class="result-section">
-        <div class="result-section-title">৳ ফি · Fee</div>
-        <span class="fee-badge">৳ 345 (Replacement) / ৳ 115 (Correction)</span>
-      </div>
-      <div class="result-section">
-        <div class="result-section-title">📄 প্রয়োজনীয় কাগজ</div>
-        <div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">জন্মনিবন্ধন সনদ (Birth Certificate)</div></div>
-        <div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">মূল NID কার্ড (যদি থাকে)</div></div>
-        <div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">পাসপোর্ট সাইজ ছবি ২ কপি</div></div>
-        <div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">ইউটিলিটি বিল / বাড়ির দলিল (ঠিকানা প্রমাণ)</div></div>
-      </div>
-      <div class="result-section">
-        <div class="result-section-title">📍 ধাপ</div>
-        <div class="step-row"><div class="step-num">1</div><div class="step-text step-text-bn">services.nidw.gov.bd এ গিয়ে অনলাইনে আবেদন করুন</div></div>
-        <div class="step-row"><div class="step-num">2</div><div class="step-text step-text-bn">আবেদন ফর্ম প্রিন্ট করুন এবং স্বাক্ষর করুন</div></div>
-        <div class="step-row"><div class="step-num">3</div><div class="step-text step-text-bn">উপজেলা নির্বাচন অফিসে কাগজ জমা দিন</div></div>
-        <div class="step-row"><div class="step-num">4</div><div class="step-text step-text-bn">বায়োমেট্রিক (আঙুলের ছাপ) দিন</div></div>
-        <div class="step-row"><div class="step-num">5</div><div class="step-text step-text-bn">১৫-৩০ দিনের মধ্যে নতুন কার্ড পাবেন</div></div>
-      </div>
-      <div class="result-section" style="background:rgba(196,75,58,0.04)">
-        <div class="result-section-title" style="color:var(--red-soft)">⚠️ সতর্কতা</div>
-        <div class="result-item-bn" style="font-size:13px;color:var(--red-soft)">দালাল বা তৃতীয় পক্ষের সাহায্য নেওয়ার দরকার নেই। সরাসরি অফিসে যান।</div>
-      </div>
-    </div>`;
+// Only allow http(s) URLs into href attributes — search_results[].url comes
+// from live Tavily search results (unlike DB rows, genuinely untrusted), so
+// a malicious result could otherwise supply a javascript: URI.
+function safeUrl(url) {
+  try {
+    const u = new URL(String(url), window.location.href);
+    return (u.protocol === 'http:' || u.protocol === 'https:') ? u.href : '#';
+  } catch {
+    return '#';
   }
-  return `<div style="font-size:14px;color:var(--ink-muted)">This is a demo. Configure an AI provider above for personalized guidance.</div>`;
 }
 
 // ── START ──

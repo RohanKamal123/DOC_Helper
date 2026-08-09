@@ -51,6 +51,8 @@ CREATE TABLE fees (
   unit TEXT NOT NULL DEFAULT 'per application',
   notes_en TEXT,
   notes_bn TEXT,
+  processing_time_en TEXT,      -- nullable: only populated where independently sourced, never guessed
+  processing_time_bn TEXT,
   source_id INT REFERENCES sources(id)
 );
 CREATE INDEX idx_fees_service ON fees (service_id);

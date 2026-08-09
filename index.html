@@ -390,6 +390,38 @@
   .send-btn:disabled { background: var(--ink-faint); cursor: not-allowed; transform: none; }
   .send-btn svg { width: 18px; height: 18px; }
 
+  .mic-btn {
+    width: 48px; height: 48px; border-radius: var(--radius-md);
+    background: white; color: var(--ink-muted); border: 1px solid var(--border-mid); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition); flex-shrink: 0;
+  }
+  .mic-btn:hover { border-color: var(--sage); color: var(--sage); }
+  .mic-btn.listening { background: var(--red-soft); border-color: var(--red-soft); color: white; animation: pulse 1s ease-in-out infinite; }
+  .mic-btn svg { width: 18px; height: 18px; }
+  .mic-btn[hidden] { display: none; }
+
+  .speak-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%; border: none; cursor: pointer;
+    background: transparent; color: var(--ink-faint); margin-left: 6px; flex-shrink: 0;
+    transition: var(--transition); vertical-align: middle;
+  }
+  .speak-btn:hover { background: var(--sage-light); color: var(--sage); }
+  .speak-btn.speaking { color: var(--sage); }
+  .speak-btn svg { width: 13px; height: 13px; }
+
+  /* Guided flow: online/offline path choice */
+  .path-choice-row { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .path-choice-btn {
+    flex: 1; min-width: 150px; text-align: left; cursor: pointer;
+    background: white; border: 1px solid var(--border-mid); border-radius: var(--radius-md);
+    padding: 12px 14px; transition: var(--transition); font-family: inherit;
+  }
+  .path-choice-btn:hover { border-color: var(--sage); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+  .path-choice-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+  .path-choice-sub { font-size: 11px; line-height: 1.6; }
+
   .input-hints {
     margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;
   }
@@ -574,6 +606,12 @@
           rows="2"
           onkeydown="handleKey(event)"
         ></textarea>
+        <button class="mic-btn" id="micBtn" onclick="toggleVoiceInput()" title="ভয়েস ইনপুট · Voice input" hidden>
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-14 0M12 18v3"/>
+          </svg>
+        </button>
         <button class="send-btn" id="sendBtn" onclick="sendMessage()">
           <svg fill="none" viewBox="0 0 18 18" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.5 9h11M9.5 4l5.5 5-5.5 5"/>
@@ -596,6 +634,7 @@ let currentLang = 'both';
 let selectedServices = [];
 let deepseekApiKey = '';
 let chatHistory = [];
+let serviceDetailCache = {};
 
 const SERVICES = [
   { id:'nid', icon:'🪪', en:'National ID (NID)', bn:'জাতীয় পরিচয়পত্র', dept:'NID Services Wing / EC' },
@@ -629,6 +668,8 @@ function init() {
   renderApiPanel();
   updateChatHeader();
   renderWelcome();
+  setupVoiceInput();
+  setupVoiceOutput();
 }
 
 function loadSavedConfig() {
@@ -687,7 +728,7 @@ function updateChatHeader() {
 function renderServices() {
   const grid = document.getElementById('servicesGrid');
   grid.innerHTML = SERVICES.map(s => `
-    <div class="service-chip" id="chip-${s.id}" onclick="toggleService('${s.id}')">
+    <div class="service-chip" id="chip-${s.id}" onclick="selectService('${s.id}')">
       <div class="service-chip-icon">${s.icon}</div>
       <div class="service-chip-en">${s.en}</div>
       <div class="service-chip-bn">${s.bn}</div>
@@ -707,8 +748,8 @@ function renderHints() {
 function renderWelcome() {
   addMessage('ai', `
     <div class="msg-bubble-bn">আস্সালামু আলাইকুম! 👋</div>
-    <div style="margin-top:6px">আমি আপনাকে সরকারি কাগজপত্রের কাজে সাহায্য করতে এসেছি — সঠিক অফিস, ফি ও ধাপ যাচাইকৃত তথ্যভান্ডার থেকে দেখাবো, অনুমান নয়। উপরে আপনার DeepSeek API key দিন, তারপর নিচে সমস্যা লিখুন।</div>
-    <div style="margin-top:8px; font-size:13px; color:var(--ink-muted)">Add your free DeepSeek API key above, then describe your situation below in Bangla or English. Answers cite their source and last-verified date.</div>
+    <div style="margin-top:6px">উপরে থেকে একটি সেবা বেছে নিন — সাথে সাথে অনলাইন ও সরাসরি অফিসে যাওয়ার পথ দেখাবো, ফি ও সময়সহ। অথবা নিচে সরাসরি আপনার প্রশ্ন লিখুন।</div>
+    <div style="margin-top:8px; font-size:13px; color:var(--ink-muted)">Pick a service above for an instant guided answer (online vs in-person, with fee and time), or type your question below. Add your free DeepSeek API key above first.</div>
   `);
 }
 
@@ -720,13 +761,18 @@ function setLang(lang) {
   });
 }
 
-// ── SERVICE SELECTION ──
-function toggleService(id) {
-  const idx = selectedServices.indexOf(id);
-  if (idx > -1) selectedServices.splice(idx, 1);
-  else selectedServices.push(id);
+// ── SERVICE SELECTION (guided flow) ──
+async function selectService(id) {
+  selectedServices = [id];
   document.querySelectorAll('.service-chip').forEach(c => c.classList.remove('selected'));
-  selectedServices.forEach(sid => document.getElementById('chip-'+sid)?.classList.add('selected'));
+  document.getElementById('chip-'+id)?.classList.add('selected');
+  renderServiceTags();
+  await startGuidedFlow(id);
+}
+
+function deselectService() {
+  selectedServices = [];
+  document.querySelectorAll('.service-chip').forEach(c => c.classList.remove('selected'));
   renderServiceTags();
 }
 
@@ -735,11 +781,120 @@ function renderServiceTags() {
   if (!selectedServices.length) { el.innerHTML = ''; return; }
   el.innerHTML = selectedServices.map(sid => {
     const s = SERVICES.find(x => x.id === sid);
-    return s ? `<div class="service-tag active">${s.icon} ${s.en} <span class="remove" onclick="toggleService('${sid}')">×</span></div>` : '';
+    return s ? `<div class="service-tag active">${s.icon} ${s.en} <span class="remove" onclick="deselectService()">×</span></div>` : '';
   }).join('');
 }
 
-// ── HINTS ──
+async function startGuidedFlow(serviceId) {
+  addTyping();
+  try {
+    const res = await fetch(`/api/service-detail?service_id=${encodeURIComponent(serviceId)}`);
+    const data = await res.json();
+    removeTyping();
+    if (!res.ok) {
+      addMessage('ai', `<div style="color:var(--red-soft)">⚠️ ${escHtml(data.error || 'Could not load service details.')}</div>`);
+      return;
+    }
+    serviceDetailCache[serviceId] = data;
+    addMessage('ai', renderChoicePrompt(data));
+  } catch (err) {
+    removeTyping();
+    addMessage('ai', `<div style="color:var(--red-soft)">⚠️ Error: ${escHtml(err.message)}</div>`);
+  }
+}
+
+function summarizeFeeSub(fees) {
+  if (!fees || !fees.length) return 'ফি জানা নেই · Fee not on file';
+  const amounts = fees.map(f => Number(f.amount_bdt)).filter(n => !isNaN(n));
+  if (!amounts.length) return 'ফি জানা নেই · Fee not on file';
+  const min = Math.min(...amounts), max = Math.max(...amounts);
+  const feeText = min === max ? `৳${min}` : `৳${min}–${max}`;
+  const withTime = fees.find(f => f.processing_time_en);
+  const timeText = withTime ? withTime.processing_time_en : 'সময় নিশ্চিত নয় · Time not confirmed';
+  return `${escHtml(feeText)} · ⏱ ${escHtml(timeText)}`;
+}
+
+function renderChoicePrompt(data) {
+  const s = data.service || {};
+  const sub = summarizeFeeSub(data.fees);
+  return `
+    <div class="msg-bubble-bn">${escHtml(s.icon || '')} ${escHtml(s.name_bn || '')} — কীভাবে এগোতে চান?</div>
+    <div style="margin-top:4px;font-size:13px;color:var(--ink-muted)">${escHtml(s.name_en || '')} — how would you like to proceed?</div>
+    <div class="path-choice-row">
+      <button class="path-choice-btn" onclick="showPathView('${s.id}','online')">
+        <div class="path-choice-title">🌐 অনলাইনে · Online</div>
+        <div class="path-choice-sub">${sub}</div>
+      </button>
+      <button class="path-choice-btn" onclick="showPathView('${s.id}','offline')">
+        <div class="path-choice-title">🏢 সরাসরি অফিসে · In-person</div>
+        <div class="path-choice-sub">${sub}</div>
+      </button>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:var(--ink-faint)">ফি সাধারণত একই থাকে, অনলাইনে বা সরাসরি আবেদন করলেও। · Fee is generally the same whether you apply online or in person.</div>
+  `;
+}
+
+function showPathView(serviceId, mode) {
+  const data = serviceDetailCache[serviceId];
+  if (!data) return;
+  addMessage('user', `<div class="msg-bubble-bn">${mode === 'online' ? '🌐 অনলাইনে' : '🏢 সরাসরি অফিসে'}</div>`);
+  addMessage('ai', renderPathCard(data, mode));
+}
+
+function renderPathCard(data, mode) {
+  const steps = data.steps || [];
+  const onlineSteps = steps.filter(s => s.is_online);
+  const offlineSteps = steps.filter(s => !s.is_online);
+
+  let stepsToShow, stepsTitle, followUpHtml = '', noteHtml = '';
+  if (mode === 'online') {
+    stepsToShow = onlineSteps.length ? onlineSteps : steps;
+    stepsTitle = '🌐 ঘরে বসে যা করবেন · Do this online';
+    if (offlineSteps.length) {
+      followUpHtml = `<div class="result-section" style="background:rgba(196,121,58,0.06)">
+        <div class="result-section-title" style="color:var(--amber)">⚠️ এরপরও অফিসে যা করতে হবে · Still required in person afterward</div>
+        ${renderStepsHtml(offlineSteps, true)}
+      </div>`;
+    }
+  } else if (offlineSteps.length) {
+    // Only the steps that genuinely happen in person — showing "apply
+    // online" under an "in-person" heading would be self-contradictory.
+    stepsToShow = offlineSteps;
+    stepsTitle = '🏢 অফিসে যা করতে হবে · What to do at the office';
+    if (onlineSteps.length) {
+      noteHtml = `<div style="padding:0 16px 14px;font-size:11px;color:var(--ink-faint)">এই সেবার কিছু অংশ (যেমন আবেদন জমা) সাধারণত অনলাইনে করা হয় — অফিসে কাগজে করা যায় কিনা তা নিশ্চিত করতে সংশ্লিষ্ট অফিসে জিজ্ঞাসা করুন। · Part of this process is normally done online — confirm with the office whether a paper-based alternative is accepted there.</div>`;
+    }
+  } else {
+    // No in-person step exists at all (e.g. TIN registration) — there's
+    // nothing honest to show under "in person" beyond saying so.
+    stepsToShow = [];
+    stepsTitle = '';
+    noteHtml = `<div style="padding:16px;font-size:13px;color:var(--ink-muted)">এই সেবাটি সম্পূর্ণ অনলাইনে করা যায় — অফিসে যাওয়ার প্রয়োজন নেই। · This service is done entirely online — no office visit needed.</div>`;
+  }
+
+  const modeLabel = mode === 'online' ? 'অনলাইনে আবেদন · Applying online' : 'সরাসরি অফিসে আবেদন · Applying in person';
+  let html = `<div class="msg-bubble-bn">${escHtml(data.service?.name_bn || '')} — ${escHtml(modeLabel)}</div>`;
+  html += `<div class="result-card" style="margin-top:10px">`;
+  html += renderOfficesHtml(data.offices);
+  html += renderFeesHtml(data.fees);
+  if (mode === 'offline') html += renderDocumentsHtml(data.documents);
+  if (stepsToShow.length) {
+    html += `<div class="result-section">
+      <div class="result-section-title">${stepsTitle}</div>
+      ${renderStepsHtml(stepsToShow, true)}
+    </div>`;
+  }
+  html += noteHtml;
+  html += followUpHtml;
+  if (mode === 'online') html += renderDocumentsHtml(data.documents);
+  html += renderFormsHtml(data.forms);
+  if (mode === 'online') html += renderPortalsHtml(data.online_portals);
+  html += renderSourcesHtml(data.sources);
+  html += `</div>`;
+  return html;
+}
+
+// ── HINTS use ──
 function useHint(text) {
   document.getElementById('userInput').value = text;
   document.getElementById('userInput').focus();
@@ -755,9 +910,19 @@ function addMessage(role, htmlContent) {
   const isAI = role === 'ai';
   const div = document.createElement('div');
   div.className = `message ${role}`;
+
+  const speakBtnHtml = (isAI && window.speechSynthesis)
+    ? `<button class="speak-btn" onclick="speakMessage(this)" title="শুনুন · Listen">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.5 8.5a5 5 0 010 7"/>
+        </svg>
+      </button>`
+    : '';
+
   div.innerHTML = `
     <div class="msg-avatar ${isAI ? 'ai' : ''}">${isAI ? 'AI' : '👤'}</div>
-    <div class="msg-bubble">${htmlContent}</div>
+    <div class="msg-bubble">${htmlContent}${speakBtnHtml}</div>
   `;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
@@ -839,7 +1004,68 @@ async function sendMessage() {
   btn.disabled = false;
 }
 
-// ── RENDER STRUCTURED RESPONSE ──
+// ── SHARED RESULT-SECTION RENDERERS ──
+// Used by both renderServiceCard() (free-text /api/chat path) and
+// renderPathCard() (guided /api/service-detail path) so the two flows stay
+// visually consistent and share one place to fix bugs/XSS handling.
+function renderOfficesHtml(offices) {
+  if (!offices || !offices.length) return '';
+  return `<div class="result-section">
+    <div class="result-section-title">🏛️ অফিস · Office</div>
+    ${offices.map(o => `
+      <div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">
+        ${escHtml(o.name_en)}${o.address_en ? ' — ' + escHtml(o.address_en) : ''}${o.phone ? ' · ☎ ' + escHtml(o.phone) : ''}
+        ${o.match_level && o.match_level.includes('fallback') ? '<div style="font-size:11px;color:var(--ink-faint);margin-top:2px">No exact local office on file — showing the closest available option.</div>' : ''}
+      </div></div>
+    `).join('')}
+  </div>`;
+}
+
+function renderFeesHtml(fees) {
+  if (!fees || !fees.length) return '';
+  return `<div class="result-section">
+    <div class="result-section-title">৳ ফি ও সময় · Fees & Time</div>
+    ${fees.map(f => `<div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">${escHtml(f.fee_type.replace(/_/g,' '))}: ৳${escHtml(String(f.amount_bdt))}${f.processing_time_en ? ' · ⏱ ' + escHtml(f.processing_time_en) : ''}${f.notes_en ? ' — ' + escHtml(f.notes_en) : ''}</div></div>`).join('')}
+  </div>`;
+}
+
+function renderDocumentsHtml(documents) {
+  if (!documents || !documents.length) return '';
+  return `<div class="result-section">
+    <div class="result-section-title">📄 প্রয়োজনীয় কাগজপত্র · Required Documents</div>
+    ${documents.map(d => `<div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">${escHtml(d.document_en)}${d.is_mandatory === false ? ' (optional)' : ''}</div></div>`).join('')}
+  </div>`;
+}
+
+function renderStepsHtml(steps, renumber) {
+  return steps.map((s, i) => `<div class="step-row"><div class="step-num">${renumber ? (i + 1) : s.step_number}</div><div class="step-text step-text-bn">${escHtml(s.title_en)}${s.is_online ? ' 🌐' : ''}</div></div>`).join('');
+}
+
+function renderFormsHtml(forms) {
+  if (!forms || !forms.length) return '';
+  return `<div class="result-section">
+    <div class="result-section-title">📝 ফর্ম · Forms</div>
+    ${forms.map(f => `<div class="result-item-bn" style="font-size:13px">${escHtml(f.form_name)}${f.download_url ? ` — <a href="${safeUrl(f.download_url)}" target="_blank" rel="noopener">Download</a>` : ''}</div>`).join('')}
+  </div>`;
+}
+
+function renderPortalsHtml(portals) {
+  if (!portals || !portals.length) return '';
+  return `<div class="result-section">
+    <div class="result-section-title">🌐 অনলাইন সুবিধা · Online</div>
+    ${portals.map(p => `<div class="result-item-bn" style="font-size:13px"><a href="${safeUrl(p.url)}" target="_blank" rel="noopener">${escHtml(p.portal_name)}</a>${p.description_en ? ' — ' + escHtml(p.description_en) : ''}</div>`).join('')}
+  </div>`;
+}
+
+function renderSourcesHtml(sources) {
+  if (!sources || !sources.length) return '';
+  return `<div class="result-section" style="background:rgba(0,0,0,0.02)">
+    <div class="result-section-title" style="font-size:11px;color:var(--ink-faint)">সূত্র · Sources</div>
+    ${sources.map(s => `<div style="font-size:11px;color:var(--ink-faint);margin-top:3px"><a href="${safeUrl(s.url)}" target="_blank" rel="noopener" style="color:inherit">${escHtml(s.title || s.publisher || s.url)}</a> · verified ${escHtml(s.last_verified_date)}</div>`).join('')}
+  </div>`;
+}
+
+// ── RENDER STRUCTURED RESPONSE (free-text /api/chat path) ──
 // Builds the AI reply directly from the backend's typed JSON (offices,
 // fees, documents, steps, forms, portals, sources) instead of parsing
 // bracket-marker prose — every fact here traces back to a DB row or a live
@@ -859,53 +1085,17 @@ function renderServiceCard(data) {
   if (badges.length) html += `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${badges.join('')}</div>`;
 
   html += `<div class="result-card" style="margin-top:10px">`;
-
-  if (data.offices?.length) {
-    html += `<div class="result-section">
-      <div class="result-section-title">🏛️ অফিস · Office</div>
-      ${data.offices.map(o => `
-        <div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">
-          ${escHtml(o.name_en)}${o.address_en ? ' — ' + escHtml(o.address_en) : ''}${o.phone ? ' · ☎ ' + escHtml(o.phone) : ''}
-          ${o.match_level && o.match_level.includes('fallback') ? '<div style="font-size:11px;color:var(--ink-faint);margin-top:2px">No exact local office on file — showing the closest available option.</div>' : ''}
-        </div></div>
-      `).join('')}
-    </div>`;
-  }
-
-  if (data.fees?.length) {
-    html += `<div class="result-section">
-      <div class="result-section-title">৳ ফি · Fees</div>
-      ${data.fees.map(f => `<div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">${escHtml(f.fee_type.replace(/_/g,' '))}: ৳${escHtml(String(f.amount_bdt))}${f.notes_en ? ' — ' + escHtml(f.notes_en) : ''}</div></div>`).join('')}
-    </div>`;
-  }
-
-  if (data.documents?.length) {
-    html += `<div class="result-section">
-      <div class="result-section-title">📄 প্রয়োজনীয় কাগজপত্র · Required Documents</div>
-      ${data.documents.map(d => `<div class="result-item"><div class="result-bullet"></div><div class="result-item-bn">${escHtml(d.document_en)}${d.is_mandatory === false ? ' (optional)' : ''}</div></div>`).join('')}
-    </div>`;
-  }
-
+  html += renderOfficesHtml(data.offices);
+  html += renderFeesHtml(data.fees);
+  html += renderDocumentsHtml(data.documents);
   if (data.steps?.length) {
     html += `<div class="result-section">
       <div class="result-section-title">📍 ধাপসমূহ · Steps</div>
-      ${data.steps.map(s => `<div class="step-row"><div class="step-num">${s.step_number}</div><div class="step-text step-text-bn">${escHtml(s.title_en)}${s.is_online ? ' 🌐' : ''}</div></div>`).join('')}
+      ${renderStepsHtml(data.steps, false)}
     </div>`;
   }
-
-  if (data.forms?.length) {
-    html += `<div class="result-section">
-      <div class="result-section-title">📝 ফর্ম · Forms</div>
-      ${data.forms.map(f => `<div class="result-item-bn" style="font-size:13px">${escHtml(f.form_name)}${f.download_url ? ` — <a href="${safeUrl(f.download_url)}" target="_blank" rel="noopener">Download</a>` : ''}</div>`).join('')}
-    </div>`;
-  }
-
-  if (data.online_portals?.length) {
-    html += `<div class="result-section">
-      <div class="result-section-title">🌐 অনলাইন সুবিধা · Online</div>
-      ${data.online_portals.map(p => `<div class="result-item-bn" style="font-size:13px"><a href="${safeUrl(p.url)}" target="_blank" rel="noopener">${escHtml(p.portal_name)}</a>${p.description_en ? ' — ' + escHtml(p.description_en) : ''}</div>`).join('')}
-    </div>`;
-  }
+  html += renderFormsHtml(data.forms);
+  html += renderPortalsHtml(data.online_portals);
 
   if (data.web_search_used && data.search_results?.length) {
     html += `<div class="result-section">
@@ -914,15 +1104,98 @@ function renderServiceCard(data) {
     </div>`;
   }
 
-  if (data.sources?.length) {
-    html += `<div class="result-section" style="background:rgba(0,0,0,0.02)">
-      <div class="result-section-title" style="font-size:11px;color:var(--ink-faint)">সূত্র · Sources</div>
-      ${data.sources.map(s => `<div style="font-size:11px;color:var(--ink-faint);margin-top:3px"><a href="${safeUrl(s.url)}" target="_blank" rel="noopener" style="color:inherit">${escHtml(s.title || s.publisher || s.url)}</a> · verified ${escHtml(s.last_verified_date)}</div>`).join('')}
-    </div>`;
-  }
-
+  html += renderSourcesHtml(data.sources);
   html += `</div>`;
   return html;
+}
+
+// ── VOICE INPUT ──
+let recognition = null;
+let isListening = false;
+
+function setupVoiceInput() {
+  const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micBtn = document.getElementById('micBtn');
+  if (!SpeechRecognitionCtor || !micBtn) return;
+
+  recognition = new SpeechRecognitionCtor();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    const input = document.getElementById('userInput');
+    input.value = transcript;
+    input.focus();
+  };
+  recognition.onerror = () => stopListening();
+  recognition.onend = () => stopListening();
+
+  micBtn.hidden = false;
+}
+
+function toggleVoiceInput() {
+  if (!recognition) return;
+  if (isListening) {
+    recognition.stop();
+    return;
+  }
+  recognition.lang = currentLang === 'en' ? 'en-US' : 'bn-BD';
+  try {
+    recognition.start();
+    isListening = true;
+    document.getElementById('micBtn')?.classList.add('listening');
+  } catch {
+    // recognition already running, or mic permission denied — ignore
+  }
+}
+
+function stopListening() {
+  isListening = false;
+  document.getElementById('micBtn')?.classList.remove('listening');
+}
+
+// ── VOICE OUTPUT ──
+function setupVoiceOutput() {
+  if (!window.speechSynthesis) return;
+  // Voice list loads asynchronously on some browsers (notably Chrome);
+  // this just warms the cache so the first "listen" click doesn't get an
+  // empty voice list.
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+function speakMessage(btnEl) {
+  const bubble = btnEl.closest('.msg-bubble');
+  if (!bubble) return;
+  const clone = bubble.cloneNode(true);
+  clone.querySelectorAll('.speak-btn').forEach(b => b.remove());
+  const text = clone.textContent.trim();
+  if (text) speakText(text, btnEl);
+}
+
+function speakText(text, btnEl) {
+  if (!window.speechSynthesis) return;
+
+  const wasSpeaking = btnEl && btnEl.dataset.speaking === '1';
+  window.speechSynthesis.cancel();
+  document.querySelectorAll('.speak-btn.speaking').forEach(b => { b.classList.remove('speaking'); b.dataset.speaking = '0'; });
+  if (wasSpeaking) return; // clicking an already-speaking button just stops it
+
+  const utter = new SpeechSynthesisUtterance(text);
+  const voices = window.speechSynthesis.getVoices();
+  const bnVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('bn'));
+  utter.voice = bnVoice || null;
+  utter.lang = bnVoice ? bnVoice.lang : 'en-US';
+  utter.rate = 0.95;
+
+  if (btnEl) {
+    btnEl.dataset.speaking = '1';
+    btnEl.classList.add('speaking');
+    utter.onend = () => { btnEl.dataset.speaking = '0'; btnEl.classList.remove('speaking'); };
+    utter.onerror = () => { btnEl.dataset.speaking = '0'; btnEl.classList.remove('speaking'); };
+  }
+  window.speechSynthesis.speak(utter);
 }
 
 // ── ESCAPE ──

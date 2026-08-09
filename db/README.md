@@ -5,7 +5,9 @@
 3. Run the seed files in `seed/` — `services.sql` first, then the rest in any order:
    `nid.sql`, `birth.sql`, `passport.sql`, `brta.sql`, `ssc.sql`, `hsc.sql`,
    `land.sql`, `trade.sql`, `taxtin.sql`, `police.sql`, `export.sql`, `import.sql`.
-4. Copy your project's URL and **service role key** (Settings > API) into
+4. Run everything in `migrations/`, in filename order (currently just
+   `001_add_processing_time.sql`). Migrations are safe to re-run.
+5. Copy your project's URL and **service role key** (Settings > API) into
    `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` (for `vercel dev`)
    and in your Vercel project's environment variables (for deployment).
 

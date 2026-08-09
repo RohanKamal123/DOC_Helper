@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   try {
     const { answerText, toolResults } = await runAgent({
       apiKey: deepseekApiKey,
-      model: model || 'deepseek-chat',
+      model: model || 'deepseek-v4-flash',
       history: safeHistory,
       userMessage,
     });

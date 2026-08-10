@@ -983,7 +983,18 @@ async function sendMessage() {
         deepseekApiKey,
       }),
     });
-    const data = await res.json();
+    const rawText = await res.text();
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      // The platform itself failed before our handler could respond
+      // (e.g. a function timeout or crash) — its error page isn't JSON.
+      removeTyping();
+      addMessage('ai', `<div style="color:var(--red-soft)">⚠️ The server took too long or crashed (HTTP ${res.status}). This can happen on a slow/cold first request — please try again.</div>`);
+      btn.disabled = false;
+      return;
+    }
     removeTyping();
 
     if (!res.ok) {

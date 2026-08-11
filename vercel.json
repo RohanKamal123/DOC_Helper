@@ -1,6 +1,11 @@
 {
   "version": 2,
   "name": "bd-document-helper",
+  "functions": {
+    "api/chat.js": { "maxDuration": 300 },
+    "api/service-detail.js": { "maxDuration": 300 },
+    "api/services.js": { "maxDuration": 300 }
+  },
   "headers": [
     {
       "source": "/(.*)",

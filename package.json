@@ -1,0 +1,13 @@
+{
+  "name": "bd-document-helper",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "BD Document Helper backend (agentic BD govt document assistant)",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4"
+  },
+  "devDependencies": {
+    "vercel": "^37.4.0"
+  }
+}
